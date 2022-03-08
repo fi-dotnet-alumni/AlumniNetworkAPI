@@ -52,14 +52,14 @@ namespace AlumniNetworkAPI.Services
 
         public async Task JoinGroupAsync(Group group, int userId)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             group.Users.Add(user);
             await _context.SaveChangesAsync();
         }
 
         public async Task<bool> UserHasGroupAccess(Group group, int userId)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (group.Users.Contains(user))
                 return true;
             return false;
