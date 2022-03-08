@@ -1,27 +1,37 @@
-﻿using AlumniNetworkAPI.Models.Domain;
+﻿using Microsoft.EntityFrameworkCore;
+using AlumniNetworkAPI.Data;
+using AlumniNetworkAPI.Models.Domain;
 
 namespace AlumniNetworkAPI.Services
 {
     public class GroupService : IGroupService
     {
+        private readonly TemplateDBContext _context;
+        public GroupService(TemplateDBContext context)
+        {
+            _context = context;
+
+        }
+
         public Task<Group> AddGroupAsync(Group group, int userId)
         {
+            // Requires GroupMember linking table
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Group>> GetAllGroupsAsync()
+        public async Task<IEnumerable<Group>> GetAllGroupsAsync()
         {
-            throw new NotImplementedException();
+            return _context.Groups.ToList();
         }
 
-        public Task<Group> GetSpecificGroupAsync(int groupId)
+        public async Task<Group> GetSpecificGroupAsync(int groupId)
         {
-            throw new NotImplementedException();
+            return _context.Groups.FirstOrDefault(g => g.Id == groupId);
         }
 
         public bool GroupExists(int groupId)
         {
-            throw new NotImplementedException();
+            return _context.Groups.Any(m => m.Id == groupId);
         }
 
         public Task JoinGroupAsync(int groupId, int userId)
