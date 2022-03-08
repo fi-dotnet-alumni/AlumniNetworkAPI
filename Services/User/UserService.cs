@@ -19,6 +19,8 @@ namespace AlumniNetworkAPI.Services
 
         public Task Get()
         {
+            // TODO: Get current user data from keycloak
+
             throw new NotImplementedException();
         }
 
@@ -37,15 +39,27 @@ namespace AlumniNetworkAPI.Services
             return null;
         }
 
-        public async Task<bool> UpdateAsync(UserUpdateDTO updatedUser)
+        public async Task<bool> UpdateAsync(int id, UserUpdateDTO updatedUser)
         {
-            // TODO: Throws error that says database profider is not set up
-            // Start setting up SQL Server
             try
             {
-                var updatedUserDomain = _mapper.Map<User>(updatedUser);
-                _context.Entry(updatedUserDomain).State = EntityState.Modified;
-                return await _context.SaveChangesAsync() > 0;
+                var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+                if (foundUser != null)
+                {
+                    if (updatedUser.Bio != foundUser.Bio)
+                        foundUser.Bio = updatedUser.Bio;
+
+                    if (updatedUser.FunFact != foundUser.FunFact)
+                        foundUser.FunFact = updatedUser.FunFact;
+
+                    if (updatedUser.PictureURL != foundUser.PictureURL)
+                        foundUser.PictureURL = updatedUser.PictureURL;
+
+                    if (updatedUser.Name != foundUser.Name)
+                        foundUser.Name = updatedUser.Name;
+
+                    return await _context.SaveChangesAsync() > 0;
+                }                
             }
             catch (Exception ex)
             {

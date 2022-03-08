@@ -57,7 +57,7 @@ namespace AlumniNetworkAPI.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserUpdateDTO updatedUser)
         {
-            bool updated = await _userService.UpdateAsync(updatedUser);
+            bool updated = await _userService.UpdateAsync(id, updatedUser);
             if (updated)
                 return Ok();
 
