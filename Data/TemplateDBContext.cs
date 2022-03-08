@@ -16,7 +16,8 @@ namespace AlumniNetworkAPI.Data
 		public List<Group> Groups = new List<Group>
 		{
 			new Group{ Id = 1, Name = "Test Group 1", Description = "The first test group", isPrivate = false },
-			new Group{ Id = 2, Name = "Test Group 2", Description = "The second test group", isPrivate = false}
+			new Group{ Id = 2, Name = "Test Group 2", Description = "The second test group", isPrivate = false},
+			new Group{ Id = 3, Name = "Test Group 3", Description = "The third test group", isPrivate = true}
 		};
 
         public TemplateDBContext(DbContextOptions options) : base(options)
