@@ -10,18 +10,34 @@ namespace AlumniNetworkAPI.Services
         public GroupService(AlumniDbContext context)
         {
             _context = context;
-
         }
 
-        public Task<Group> AddGroupAsync(Group group, int userId)
+        public async Task<Group> AddGroupAsync(Group group)
         {
-            // Requires GroupMember linking table
-            throw new NotImplementedException();
+            _context.Groups.Add(group);
+            await _context.SaveChangesAsync();
+            return group;
         }
 
-        public async Task<IEnumerable<Group>> GetAllGroupsAsync()
+        public async Task<IEnumerable<Group>> GetAllGroupsAsync(int userId)
         {
-            return await _context.Groups.Include(g => g.Users).Include(g => g.Posts).ToListAsync();
+            List<Group> allGroups = await _context.Groups.Include(g => g.Users).Include(g => g.Posts).ToListAsync();
+            List<Group> visibleGroups = new List<Group>();
+            foreach (var group in allGroups)
+            {
+                if (group.isPrivate)
+                {
+                    if (await UserHasGroupAccess(group, userId))
+                    {
+                        visibleGroups.Add(group);
+                    }
+                }
+                else
+                {
+                    visibleGroups.Add(group);
+                }
+            }
+            return visibleGroups;
         }
 
         public async Task<Group> GetSpecificGroupAsync(int groupId)
@@ -34,9 +50,19 @@ namespace AlumniNetworkAPI.Services
             return _context.Groups.Any(g => g.Id == groupId);
         }
 
-        public Task JoinGroupAsync(int groupId, int userId)
+        public async Task JoinGroupAsync(Group group, int userId)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+            group.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UserHasGroupAccess(Group group, int userId)
+        {
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.ID == userId);
+            if (group.Users.Contains(user))
+                return true;
+            return false;
         }
     }
 }

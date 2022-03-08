@@ -30,7 +30,24 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GroupReadDTO>>> GetGroups()
         {
-            return _mapper.Map<List<GroupReadDTO>>(await _groupService.GetAllGroupsAsync());
+            // TODO: Get user id from JWT token
+            int userId = 1;
+            List<GroupReadDTO> allGroups = _mapper.Map<List<GroupReadDTO>>(await _groupService.GetAllGroupsAsync(userId));
+            List<GroupReadDTO> visibleGroups = new List<GroupReadDTO>();
+            
+            foreach (GroupReadDTO group in allGroups)
+            {
+                if (group.isPrivate)
+                {
+                    if (group.Users.Contains(userId))
+                        visibleGroups.Add(group);
+                }
+                else
+                {
+                    visibleGroups.Add(group);
+                }
+            }
+            return visibleGroups;
         }
 
         /// <summary>
@@ -41,6 +58,9 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GroupReadDTO>> GetGroup(int id)
         {
+            // TODO: Get user id from JWT token
+            int userId = 1;
+
             Group group = await _groupService.GetSpecificGroupAsync(id);
 
             if (group == null)
@@ -48,10 +68,10 @@ namespace AlumniNetworkAPI.Controllers
                 return NotFound();
             }
 
-            //TODO
-            // check if private
-            // check if current user is a member
-            // 403 otherwise
+            if (!await _groupService.UserHasGroupAccess(group, userId))
+            {
+                return StatusCode(403);
+            }
 
             return _mapper.Map<GroupReadDTO>(group);
         }
@@ -60,14 +80,17 @@ namespace AlumniNetworkAPI.Controllers
         /// Create a new group.
         /// </summary>
         /// <param name="dtoGroup">New group object to be created</param>
-        /// <param name="userId">Id of the current user</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<Group>> PostGroup(GroupCreateDTO dtoGroup, int userId)
+        public async Task<ActionResult<Group>> PostGroup(GroupCreateDTO dtoGroup)
         {
             Group domainGroup = _mapper.Map<Group>(dtoGroup);
-            // TODO default current user id
-            domainGroup = await _groupService.AddGroupAsync(domainGroup, userId);
+
+            // TODO: Get user id from JWT token
+            int userId = 1;
+
+            domainGroup = await _groupService.AddGroupAsync(domainGroup);
+            await _groupService.JoinGroupAsync(domainGroup, userId);
 
             return CreatedAtAction("GetGroup",
                 new { id = domainGroup.Id },
@@ -78,28 +101,34 @@ namespace AlumniNetworkAPI.Controllers
         /// Create a new group membership record.
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="userId"></param>
         /// <returns></returns>
         [HttpPost("{id}/join")]
-        public async Task<IActionResult> JoinGroup(int id, int userId)
+        public async Task<IActionResult> JoinGroup(int id)
         {
+            // TODO: Check request body for user id, use current user otherwise
+            // TODO: Get user id from JWT token
+            int userId = 1;
+
             if (!_groupService.GroupExists(id))
             {
                 return NotFound();
             }
 
-            //TODO
-            // check if private
-            // check if current user is a member
-            // 403 otherwise
+            // TODO: Use user service to check if user exists before proceeding
+            // Return BadRequest("Invalid user id") otherwise
 
-            try
+            Group group = await _groupService.GetSpecificGroupAsync(id);
+
+            if (group.isPrivate)
             {
-                await _groupService.JoinGroupAsync(id, userId);
-            }
-            catch (KeyNotFoundException)
-            {
-                return BadRequest("Invalid user id.");
+                if (!await _groupService.UserHasGroupAccess(group, userId))
+                {
+                    return StatusCode(403);
+                }
+                else
+                {
+                    await _groupService.JoinGroupAsync(group, userId);
+                }
             }
 
             return NoContent();
