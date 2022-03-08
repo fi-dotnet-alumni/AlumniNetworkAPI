@@ -9,9 +9,9 @@ namespace AlumniNetworkAPI.Services
 	public class UserSevice : IUserService
 	{
         private readonly IMapper _mapper;
-        private readonly TemplateDBContext _context;
+        private readonly AlumniDbContext _context;
 
-        public UserSevice(TemplateDBContext context, IMapper mapper)
+        public UserSevice(AlumniDbContext context, IMapper mapper)
 		{
             _mapper = mapper;
             _context = context;
@@ -26,7 +26,7 @@ namespace AlumniNetworkAPI.Services
         {
             try
             {
-                var foundUser = _context.Users.FirstOrDefault(u => u.ID == id);
+                var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.ID == id);
                 return _mapper.Map<UserReadDTO>(foundUser);
             }
             catch (Exception ex)
