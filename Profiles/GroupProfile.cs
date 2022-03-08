@@ -14,8 +14,8 @@ namespace AlumniNetworkAPI.Profiles
                 .ForMember(gdto => gdto.Users, opt => opt
                 .MapFrom(g => g.Users.Select(u => u.ID).ToList()))
                 // turn related posts into a list of ints
-                //.ForMember(gdto => gdto.Posts, opt => opt
-                //.MapFrom(g => g.Posts.Select(p => p.Id).ToList()))
+                .ForMember(gdto => gdto.Posts, opt => opt
+                .MapFrom(g => g.Posts.Select(p => p.Id).ToList()))
                 .ReverseMap();
 
             // Group<->GroupCreateDTO
