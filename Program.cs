@@ -1,4 +1,4 @@
-﻿using AlumniNetworkAPI.Data;
+using AlumniNetworkAPI.Data;
 using AlumniNetworkAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -11,6 +11,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
 builder.Services.AddScoped<IUserService, UserSevice>();
 
 builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
