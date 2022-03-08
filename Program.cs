@@ -1,4 +1,5 @@
-﻿using AlumniNetworkAPI.Services;
+using AlumniNetworkAPI.Data;
+using AlumniNetworkAPI.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -10,6 +11,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
 
 builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
+builder.Services.AddScoped<IUserService, UserSevice>();
+
+builder.Services.AddDbContext<TemplateDBContext>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

@@ -28,8 +28,26 @@
     <None Remove="Microsoft.EntityFrameworkCore.Design" />
     <None Remove="Microsoft.EntityFrameworkCore" />
     <None Remove="AutoMapper.Extensions.Microsoft.DependencyInjection" />
+    <None Remove="Services\" />
+    <None Remove="Services\User\" />
+    <None Remove="Models\" />
+    <None Remove="Models\DTO\" />
+    <None Remove="Models\DTO\User\" />
+    <None Remove="Models\Domain\" />
+    <None Remove="Profiles\" />
+    <None Remove="Extensions\" />
+    <None Remove="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Services\" />
+    <Folder Include="Services\User\" />
+    <Folder Include="Models\" />
+    <Folder Include="Models\DTO\" />
+    <Folder Include="Models\DTO\User\" />
+    <Folder Include="Models\Domain\" />
+    <Folder Include="Profiles\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Data\" />
   </ItemGroup>
 </Project>
