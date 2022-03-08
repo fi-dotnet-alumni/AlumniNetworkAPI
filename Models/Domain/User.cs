@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AlumniNetworkAPI.Models.Domain
 {
@@ -24,6 +23,8 @@ namespace AlumniNetworkAPI.Models.Domain
 
         [MaxLength(256)]
         public string FunFact { get; set; }
+        public ICollection<Group> Groups { get; set; }
+        public ICollection<Topic> Topics { get; set; }
+        public ICollection<Post> Posts { get; set; }
     }
 }
-
