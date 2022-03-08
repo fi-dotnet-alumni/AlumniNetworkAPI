@@ -6,7 +6,7 @@ namespace AlumniNetworkAPI.Models.Domain
 	public class User
 	{
         [Key]
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MinLength(3)]

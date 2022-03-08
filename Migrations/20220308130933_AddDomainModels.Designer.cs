@@ -4,6 +4,7 @@ using AlumniNetworkAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlumniNetworkAPI.Migrations
 {
     [DbContext(typeof(AlumniDbContext))]
-    partial class AlumniDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220308130933_AddDomainModels")]
+    partial class AddDomainModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -195,18 +197,6 @@ namespace AlumniNetworkAPI.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("GroupUser");
-
-                    b.HasData(
-                        new
-                        {
-                            GroupsId = 1,
-                            UsersId = 1
-                        },
-                        new
-                        {
-                            GroupsId = 3,
-                            UsersId = 1
-                        });
                 });
 
             modelBuilder.Entity("TopicUser", b =>

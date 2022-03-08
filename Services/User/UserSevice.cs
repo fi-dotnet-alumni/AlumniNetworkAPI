@@ -26,7 +26,7 @@ namespace AlumniNetworkAPI.Services
         {
             try
             {
-                var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.ID == id);
+                var foundUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
                 return _mapper.Map<UserReadDTO>(foundUser);
             }
             catch (Exception ex)

@@ -12,7 +12,7 @@ namespace AlumniNetworkAPI.Profiles
             CreateMap<Group, GroupReadDTO>()
                 // turn related users into a list of ints
                 .ForMember(gdto => gdto.Users, opt => opt
-                .MapFrom(g => g.Users.Select(u => u.ID).ToList()))
+                .MapFrom(g => g.Users.Select(u => u.Id).ToList()))
                 // turn related posts into a list of ints
                 .ForMember(gdto => gdto.Posts, opt => opt
                 .MapFrom(g => g.Posts.Select(p => p.Id).ToList()))

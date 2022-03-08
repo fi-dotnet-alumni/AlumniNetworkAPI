@@ -15,9 +15,10 @@ namespace AlumniNetworkAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<User>().HasData(new User
             {
-                ID = 1,
+                Id = 1,
                 Name = "Tester",
                 Status = "Online",
                 PictureURL = "https://picsum.photos/100/100",
@@ -59,6 +60,11 @@ namespace AlumniNetworkAPI.Data
                     new { GroupsId = 1, UsersId = 1 },
                     new { GroupsId = 3, UsersId = 1 }
             ));
+
+            modelBuilder
+                .Entity<Post>()
+                .HasOne(p => p.Sender)
+                .WithMany(p => p.Posts);
         }
     }
 }
