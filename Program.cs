@@ -1,5 +1,6 @@
 using AlumniNetworkAPI.Data;
 using AlumniNetworkAPI.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -13,7 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
 builder.Services.AddScoped<IUserService, UserSevice>();
 
-builder.Services.AddDbContext<TemplateDBContext>();
+builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
