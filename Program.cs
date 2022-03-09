@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
 builder.Services.AddScoped<IUserService, UserSevice>();
 
-builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
+builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration["ConnectionString"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
