@@ -39,6 +39,9 @@
     <None Remove="Extensions\" />
     <None Remove="Data\" />
     <None Remove="Microsoft.EntityFrameworkCore.SqlServer" />
+    <None Remove="Microsoft.AspNetCore.JsonPatch" />
+    <None Remove="Services\Topic\" />
+    <None Remove="Models\DTO\Topic\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -51,5 +54,7 @@
     <Folder Include="Profiles\" />
     <Folder Include="Extensions\" />
     <Folder Include="Data\" />
+    <Folder Include="Services\Topic\" />
+    <Folder Include="Models\DTO\Topic\" />
   </ItemGroup>
 </Project>

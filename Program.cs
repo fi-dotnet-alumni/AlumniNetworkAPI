@@ -13,6 +13,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
 builder.Services.AddScoped<IUserService, UserSevice>();
+builder.Services.AddScoped<ITopicService, TopicService>();
 
 builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("LocalConnection")));
 
