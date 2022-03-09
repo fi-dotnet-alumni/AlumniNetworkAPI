@@ -32,16 +32,23 @@ namespace AlumniNetworkAPI.Controllers
         {
             // TODO: Get user id from JWT token
             int userId = 1;
-            List<GroupReadDTO> allGroups = _mapper.Map<List<GroupReadDTO>>(await _groupService.GetAllGroupsAsync(userId));
+
+            // get all groups
+            List<GroupReadDTO> allGroups = _mapper.Map<List<GroupReadDTO>>(await _groupService.GetAllGroupsAsync());
             List<GroupReadDTO> visibleGroups = new List<GroupReadDTO>();
             
+            // Iterate through the groups
             foreach (GroupReadDTO group in allGroups)
             {
+                // if a group is private
                 if (group.isPrivate)
                 {
+                    // check if the requesting user is a member of the group
                     if (group.Users.Contains(userId))
+                        // add the group to the list of returned groups
                         visibleGroups.Add(group);
                 }
+                // group is public
                 else
                 {
                     visibleGroups.Add(group);
@@ -68,9 +75,15 @@ namespace AlumniNetworkAPI.Controllers
                 return NotFound();
             }
 
-            if (!await _groupService.UserHasGroupAccess(group, userId))
+            // check if the group is private
+            if (group.isPrivate)
             {
-                return StatusCode(403);
+                // check if the requesting user is not a member of the group
+                if (!await _groupService.UserHasGroupAccess(group, userId))
+                {
+                    // return 403 Forbidden
+                    return StatusCode(403);
+                }
             }
 
             return _mapper.Map<GroupReadDTO>(group);
@@ -89,7 +102,9 @@ namespace AlumniNetworkAPI.Controllers
             // TODO: Get user id from JWT token
             int userId = 1;
 
+            // add the group to the database
             domainGroup = await _groupService.AddGroupAsync(domainGroup);
+            // add the requesting user as the first member of the group
             await _groupService.JoinGroupAsync(domainGroup, userId);
 
             return CreatedAtAction("GetGroup",
@@ -100,15 +115,21 @@ namespace AlumniNetworkAPI.Controllers
         /// <summary>
         /// Create a new group membership record.
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Id of the group</param>
+        /// <param name="userId">Optional id of the joining user in request body</param>
         /// <returns></returns>
         [HttpPost("{id}/join")]
-        public async Task<IActionResult> JoinGroup(int id)
+        public async Task<IActionResult> JoinGroup(int id, [FromBody] int userId = default)
         {
-            // TODO: Check request body for user id, use current user otherwise
             // TODO: Get user id from JWT token
-            int userId = 1;
+            int requestingUserId = 1;
+            // TODO: Check request body for user id, use requesting user otherwise
+            if (userId == default)
+            {
+                userId = requestingUserId;
+            }
 
+            // invalid group id
             if (!_groupService.GroupExists(id))
             {
                 return NotFound();
@@ -119,14 +140,18 @@ namespace AlumniNetworkAPI.Controllers
 
             Group group = await _groupService.GetSpecificGroupAsync(id);
 
+            // check if the group is private
             if (group.isPrivate)
             {
-                if (!await _groupService.UserHasGroupAccess(group, userId))
+                // check if the requesting user is not a memeber of the group
+                if (!await _groupService.UserHasGroupAccess(group, requestingUserId))
                 {
+                    // 403 Forbidden
                     return StatusCode(403);
                 }
                 else
                 {
+                    // add the specified user to the group
                     await _groupService.JoinGroupAsync(group, userId);
                 }
             }
