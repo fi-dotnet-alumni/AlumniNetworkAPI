@@ -18,6 +18,9 @@ namespace AlumniNetworkAPI.Models.Domain
         public int? SenderId { get; set; }
         public User? Sender { get; set; }
 
+        public int? ReplyParentId { get; set; }
+        public Post? ReplyParent { get; set; }
+        public ICollection<Post>? Replies { get; set; }
         public int? TargetUserId { get; set; }
         public User? TargetUser { get; set; }
 
