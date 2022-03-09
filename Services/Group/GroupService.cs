@@ -19,25 +19,10 @@ namespace AlumniNetworkAPI.Services
             return group;
         }
 
-        public async Task<IEnumerable<Group>> GetAllGroupsAsync(int userId)
+        public async Task<IEnumerable<Group>> GetAllGroupsAsync()
         {
-            List<Group> allGroups = await _context.Groups.Include(g => g.Users).Include(g => g.Posts).ToListAsync();
-            List<Group> visibleGroups = new List<Group>();
-            foreach (var group in allGroups)
-            {
-                if (group.isPrivate)
-                {
-                    if (await UserHasGroupAccess(group, userId))
-                    {
-                        visibleGroups.Add(group);
-                    }
-                }
-                else
-                {
-                    visibleGroups.Add(group);
-                }
-            }
-            return visibleGroups;
+            return await _context.Groups.Include(g => g.Users).Include(g => g.Posts).ToListAsync();
+            
         }
 
         public async Task<Group> GetSpecificGroupAsync(int groupId)

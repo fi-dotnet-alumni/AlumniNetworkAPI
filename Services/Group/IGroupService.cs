@@ -4,7 +4,7 @@ namespace AlumniNetworkAPI.Services
 {
     public interface IGroupService
     {
-        public Task<IEnumerable<Group>> GetAllGroupsAsync(int userId);
+        public Task<IEnumerable<Group>> GetAllGroupsAsync();
         public Task<Group> GetSpecificGroupAsync(int groupId);
         public Task<Group> AddGroupAsync(Group group);
         public Task JoinGroupAsync(Group group, int userId);
