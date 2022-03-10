@@ -9,6 +9,7 @@ namespace AlumniNetworkAPI.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Group> Groups { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<Topic> Topics { get; set; }
 
         public AlumniDbContext(DbContextOptions options) : base(options)
 		{
@@ -52,6 +53,28 @@ namespace AlumniNetworkAPI.Data
                 }
             );
 
+            // Seeded Topic data
+            modelBuilder.Entity<Topic>().HasData(
+                new Topic
+                {
+                    Id = 1,
+                    Name = ".NET",
+                    Description =  "This topic covers everything .NET"
+                },
+                new Topic
+                {
+                    Id = 2,
+                    Name = "JavaScript",
+                    Description =  "This topic has everything JavaScript related"
+                },
+                new Topic
+                {
+                    Id = 3,
+                    Name = "React",
+                    Description =  "Everything React related"
+                }
+            );
+
             // Seeded UserGroup link table data
             modelBuilder
                 .Entity<Group>()
@@ -66,6 +89,15 @@ namespace AlumniNetworkAPI.Data
                 .Entity<Post>()
                 .HasOne(p => p.Sender)
                 .WithMany(p => p.Posts);
+
+            modelBuilder
+                .Entity<Topic>()
+                .HasMany(t => t.Users)
+                .WithMany(u => u.Topics)
+                .UsingEntity(t => t.HasData(
+                        new { TopicsId = 1, UsersId = 1 },
+                        new { TopicsId = 2, UsersId = 1 }
+                    ));
         }
     }
 }

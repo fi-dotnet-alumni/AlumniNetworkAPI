@@ -28,7 +28,7 @@ namespace AlumniNetworkAPI.Models.Domain
         public Group? TargetGroup { get; set; }
 
         public int? TargetTopicId { get; set; }
-        public Topic? TargeTopic { get; set; }
+        public Topic? TargetTopic { get; set; }
         
     }
 }

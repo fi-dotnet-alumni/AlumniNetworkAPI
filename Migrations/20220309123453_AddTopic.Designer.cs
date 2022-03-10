@@ -4,6 +4,7 @@ using AlumniNetworkAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AlumniNetworkAPI.Migrations
 {
     [DbContext(typeof(AlumniDbContext))]
-    partial class AlumniDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220309123453_AddTopic")]
+    partial class AddTopic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +46,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups", (string)null);
+                    b.ToTable("Groups");
 
                     b.HasData(
                         new
@@ -111,7 +113,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasIndex("TargetUserId");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("AlumniNetworkAPI.Models.Domain.Topic", b =>
@@ -133,7 +135,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Topics", (string)null);
+                    b.ToTable("Topics");
 
                     b.HasData(
                         new
@@ -185,7 +187,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
                     b.HasData(
                         new
@@ -211,7 +213,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("GroupUser", (string)null);
+                    b.ToTable("GroupUser");
 
                     b.HasData(
                         new
@@ -238,7 +240,7 @@ namespace AlumniNetworkAPI.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("TopicUser", (string)null);
+                    b.ToTable("TopicUser");
 
                     b.HasData(
                         new
