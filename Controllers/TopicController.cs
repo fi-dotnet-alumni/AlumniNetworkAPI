@@ -25,6 +25,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <returns>List of topics</returns>
         [HttpGet]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TopicReadDTO>>> GetAllTopics()
         {
@@ -50,13 +51,15 @@ namespace AlumniNetworkAPI.Controllers
         /// <param name="id">Topic id</param>
         /// <returns>Found Topic</returns>
         [HttpGet("/topic/{id}")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TopicReadDTO>> GetTopic(int id)
         {
             try
             {
                 var topic = await _topicService.GetTopicAsync(id);
-                return Ok(_mapper.Map<TopicReadDTO>(topic));
+                if(topic != null)
+                    return Ok(_mapper.Map<TopicReadDTO>(topic));
             }
             catch (Exception ex)
             {
@@ -72,13 +75,15 @@ namespace AlumniNetworkAPI.Controllers
         /// <param name="newTopic">New topic object</param>
         /// <returns>Created topic</returns>
         [HttpPost("/topic")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateTopic([FromBody] TopicCreateDTO newTopic)
         {
             try
             {
                 var createdTopic = await _topicService.CreateTopicAsync(_mapper.Map<Topic>(newTopic));
-                return CreatedAtAction("CreateTopic", _mapper.Map<TopicReadDTO>(createdTopic));
+                if(createdTopic != null)
+                    return CreatedAtAction("CreateTopic", _mapper.Map<TopicReadDTO>(createdTopic));
             }
             catch (Exception ex)
             {
@@ -93,6 +98,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="topicId">Topic id</param>
         [HttpPost("/topic/{topicId}/join")]
+        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> JoinTopic(int topicId)
         {
@@ -100,8 +106,12 @@ namespace AlumniNetworkAPI.Controllers
             {
                 int DEBUG_UserId = 1; // TODO: Get this info from keycloak
 
-                await _topicService.JoinTopicAsync(topicId, DEBUG_UserId);
-                return Ok();
+                if(await _topicService.TopicExistsAsync(topicId))
+                {
+                    await _topicService.JoinTopicAsync(topicId, DEBUG_UserId);
+
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {

@@ -8,6 +8,7 @@ namespace AlumniNetworkAPI.Services
 		public Task<Topic> GetTopicAsync(int id);
 		public Task<Topic> CreateTopicAsync(Topic topic);
 		public Task JoinTopicAsync(int topicId, int userId);
+		public Task<bool> TopicExistsAsync(int id);
 
 	}
 }

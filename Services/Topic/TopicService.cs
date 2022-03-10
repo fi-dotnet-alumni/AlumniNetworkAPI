@@ -45,6 +45,11 @@ namespace AlumniNetworkAPI.Services
                 }
             }
         }
+
+        public async Task<bool> TopicExistsAsync(int id)
+        {
+            return await _context.Topics.FirstOrDefaultAsync(t => t.Id == id) != null;
+        }
     }
 }
 
