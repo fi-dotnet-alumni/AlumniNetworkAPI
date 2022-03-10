@@ -13,7 +13,7 @@ namespace AlumniNetworkAPI.Models.Domain
         public string Description { get; set; }
         [Required]
         public bool isPrivate { get; set; }
-        public ICollection<User> Users { get; set; }
-        public ICollection<Post> Posts { get; set; }
+        public ICollection<User>? Users { get; set; }
+        public ICollection<Post>? Posts { get; set; }
     }
 }
