@@ -29,7 +29,7 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<Topic> GetTopicAsync(int id)
         {
-            return await _context.Topics.FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Topics.Include(t => t.Posts).FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task JoinTopicAsync(int topicId, int userId)

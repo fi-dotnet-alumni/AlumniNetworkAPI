@@ -1,4 +1,5 @@
-﻿using AlumniNetworkAPI.Models.Domain;
+﻿using System.Net.Mime;
+using AlumniNetworkAPI.Models.Domain;
 using AlumniNetworkAPI.Models.DTO.Topic;
 using AlumniNetworkAPI.Services;
 using AutoMapper;
@@ -9,6 +10,9 @@ namespace AlumniNetworkAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]/")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;
@@ -25,15 +29,11 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <returns>List of topics</returns>
         [HttpGet]
-        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TopicReadDTO>>> GetAllTopics()
         {
             try
             {
-                // TODO: Finish up after Posts are done
-                // Currently posts are not being shown
-                // They're also commented out on TopicReadDTO
                 var topics = await _topicService.GetAllTopicsAsync();
                 return Ok(_mapper.Map<IEnumerable<TopicReadDTO>>(topics));
             }
@@ -51,7 +51,6 @@ namespace AlumniNetworkAPI.Controllers
         /// <param name="id">Topic id</param>
         /// <returns>Found Topic</returns>
         [HttpGet("/topic/{id}")]
-        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TopicReadDTO>> GetTopic(int id)
         {
@@ -75,7 +74,6 @@ namespace AlumniNetworkAPI.Controllers
         /// <param name="newTopic">New topic object</param>
         /// <returns>Created topic</returns>
         [HttpPost("/topic")]
-        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateTopic([FromBody] TopicCreateDTO newTopic)
         {
@@ -98,7 +96,6 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="topicId">Topic id</param>
         [HttpPost("/topic/{topicId}/join")]
-        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> JoinTopic(int topicId)
         {

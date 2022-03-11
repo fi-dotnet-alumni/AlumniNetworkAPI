@@ -1,5 +1,5 @@
 ﻿using System;
-using AlumniNetworkAPI.Models.DTO.User;
+using AlumniNetworkAPI.Models.DTO.Post;
 
 namespace AlumniNetworkAPI.Models.DTO.Topic
 {
@@ -7,7 +7,7 @@ namespace AlumniNetworkAPI.Models.DTO.Topic
 	{
         public string Name { get; set; }
         public string Description { get; set; }
-        //public ICollection<PostReadDTO> Posts { get; set; }
+        public List<int> Posts { get; set; }
     }
 }
 
