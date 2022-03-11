@@ -10,7 +10,11 @@ namespace AlumniNetworkAPI.Profiles
 		public TopicProfile()
 		{
 			CreateMap<Topic, TopicReadDTO>()
+				// turn related posts into a list of ints
+				.ForMember(tdto => tdto.Posts, opt => opt
+					.MapFrom(t => t.Posts.Select(p => p.Id).ToList()))
 				.ReverseMap();
+				
 			CreateMap<Topic, TopicCreateDTO>()
 				.ReverseMap();
 		}
