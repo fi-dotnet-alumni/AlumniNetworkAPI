@@ -8,5 +8,6 @@ namespace AlumniNetworkAPI.Services
 		Task Get();
 		Task<User> GetInfoAsync(int id);
 		Task<bool> UpdateAsync(int id, UserUpdateDTO updatedUser);
+		Task<bool> UserExistsAsync(int id);
 	}
 }

@@ -48,6 +48,11 @@ namespace AlumniNetworkAPI.Services
 
             return false;
         }
+
+        public async Task<bool> UserExistsAsync(int id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id) != null;
+        }
     }
 }
 
