@@ -27,6 +27,11 @@ namespace AlumniNetworkAPI.Services
             return post;
         }
 
+        public async Task<IEnumerable<Post>> GetAllPostsAsync()
+        {
+            return await _context.Posts.ToListAsync();
+        }
+
         public async Task<IEnumerable<Post>> GetDirectMessagePostsAsync(int userId)
         {
             return await _context.Posts.Where(p => p.TargetUserId == userId).ToListAsync();
@@ -37,7 +42,7 @@ namespace AlumniNetworkAPI.Services
             return await _context.Posts.Where(p => p.TargetUserId == userId && p.SenderId == senderId).ToListAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
+        public Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
         {
             // find user
             // list of user topic ids
@@ -46,15 +51,19 @@ namespace AlumniNetworkAPI.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Post>> GetGroupPostsFromSpecificGroupAsync(int userId, int groupId)
+        public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
         {
-            // check group access here or in controller?
             return await _context.Posts.Where(p => p.TargetGroupId == groupId).ToListAsync();
         }
 
-        public async Task<IEnumerable<Post>> GetTopicPostsFromSpecificTopicAsync(int topicId)
+        public async Task<IEnumerable<Post>> GetPostsFromSpecificTopicAsync(int topicId)
         {
             return await _context.Posts.Where(p => p.TargetTopicId == topicId).ToListAsync();
+        }
+
+        public async Task<Post> GetSpecificPostAsync(int postId)
+        {
+            return await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
         }
 
         public async Task UpdatePostAsync(Post post)

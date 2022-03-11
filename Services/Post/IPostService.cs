@@ -7,9 +7,12 @@ namespace AlumniNetworkAPI.Services
         public Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId);
         public Task<IEnumerable<Post>> GetDirectMessagePostsAsync(int userId);
         public Task<IEnumerable<Post>> GetDirectMessagePostsFromSpecificUserAsync(int userId, int senderId);
-        public Task<IEnumerable<Post>> GetGroupPostsFromSpecificGroupAsync(int userId, int groupId);
-        public Task<IEnumerable<Post>> GetTopicPostsFromSpecificTopicAsync(int topicId);
+        public Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId);
+        public Task<IEnumerable<Post>> GetPostsFromSpecificTopicAsync(int topicId);
         public Task<Post> AddPostAsync(Post post);
         public Task UpdatePostAsync(Post post);
+        // temporary method for testing purposes
+        public Task<IEnumerable<Post>> GetAllPostsAsync();
+        public Task<Post> GetSpecificPostAsync(int postId);
     }
 }

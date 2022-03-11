@@ -45,7 +45,6 @@
     <None Remove="Models\DTO\Topic\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="Services\User\" />
     <Folder Include="Models\DTO\User\" />
     <Folder Include="Models\Domain\" />
