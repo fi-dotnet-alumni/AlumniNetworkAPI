@@ -16,6 +16,7 @@ namespace AlumniNetworkAPI.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IPostService _postService;
+        private readonly IGroupService _groupService;
 
         public PostController(IMapper mapper, IPostService postService)
         {
@@ -31,6 +32,45 @@ namespace AlumniNetworkAPI.Controllers
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetAllPosts()
         {
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetAllPostsAsync());
+        }
+
+        /// <summary>
+        /// Return a post specified by the id if the current user is authorized to access it.
+        /// </summary>
+        /// <param name="id">Id of the post</param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async Task<ActionResult<PostReadDTO>> GetPost(int id)
+        {
+            // TODO: Get user id from JWT token
+            int userId = 1;
+
+            Post post = await _postService.GetSpecificPostAsync(id);
+
+            if (post == null)
+            {
+                // 404
+                return NotFound();
+            }
+
+            // check if the post is a direct message
+            if (post.TargetUserId != null)
+            {
+                // check if the message was for someone else and it wasn't sent by the requesting user
+                if (post.TargetUserId != userId && post.SenderId != userId)
+                    return StatusCode(403);
+            }
+
+            // check if the post belongs to a private group
+            if (post.TargetGroup != null)
+            {
+                if (!await _groupService.UserHasGroupAccess(post.TargetGroup, userId))
+                {
+                    return StatusCode(403);
+                }
+            }
+            
+            return _mapper.Map<PostReadDTO>(post);
         }
 
         /// <summary>
