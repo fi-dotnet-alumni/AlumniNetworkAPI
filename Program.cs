@@ -1,7 +1,10 @@
 using AlumniNetworkAPI.Data;
 using AlumniNetworkAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +20,29 @@ builder.Services.AddScoped(typeof(IPostService), typeof(PostService));
 builder.Services.AddScoped<ITopicService, TopicService>();
 
 builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration["ConnectionString"]));
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKeyResolver = (token, securitytoken, kid, parameters) =>
+            {
+                var client = new HttpClient();
+                var keyuri = builder.Configuration["TokenSecrets:KeyURI"];
+                var response = client.GetAsync(keyuri).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(responseString);
+                return keys.Keys;
+            },
+            ValidIssuers = new List<string>
+            {
+                builder.Configuration["TokenSecrets:IssuerURI"]
+            },
+            ValidAudience = "account"
+        };
+    });
+
+builder.Services.AddDbContext<AlumniDbContext>(opt => opt.UseSqlServer(builder.Configuration["ConnectionStrings:LocalConnection"]));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
