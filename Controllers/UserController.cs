@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using AlumniNetworkAPI.Extensions;
 using AlumniNetworkAPI.Models.DTO.User;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlumniNetworkAPI.Controllers
-{
+{    
     [ApiController]
     [Route("api/[controller]/")]
     public class UserController : ControllerBase
@@ -41,6 +42,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="id">User ID</param>
         /// <returns>Information about the user</returns>
+        [Authorize]
         [HttpGet("{id}")]
         [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -51,6 +53,13 @@ namespace AlumniNetworkAPI.Controllers
                 return NotFound($"Could not find player info with id {id}");
 
             return Ok(_mapper.Map<UserReadDTO>(info));
+        }
+
+        [Authorize]
+        [HttpGet("test")]
+        public async Task<IActionResult> Test(int id)
+        {
+            return Ok("Accessed hidden endpoint! Everything works");
         }
 
         /// <summary>
