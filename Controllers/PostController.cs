@@ -26,7 +26,7 @@ namespace AlumniNetworkAPI.Controllers
         }
 
         /// <summary>
-        /// Returns all posts. Change to user topic and group posts later.
+        /// Returns all posts. Used for development, testing and debugging.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -34,6 +34,21 @@ namespace AlumniNetworkAPI.Controllers
         {
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetAllPostsAsync());
         }
+
+        /*
+        /// <summary>
+        /// Returns a list of posts to groups and topics for which the requesting user is subscribed to.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
+        {
+            // TODO: Get user id from JWT token
+            int userId = 1;
+
+            return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(userId));
+        }
+        */
 
         /// <summary>
         /// Return a post specified by the id if the current user is authorized to access it.

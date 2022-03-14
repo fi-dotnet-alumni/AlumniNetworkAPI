@@ -42,13 +42,23 @@ namespace AlumniNetworkAPI.Services
             return await _context.Posts.Where(p => p.TargetUserId == userId && p.SenderId == senderId).ToListAsync();
         }
 
-        public Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
+        public async Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
         {
-            // find user
-            // list of user topic ids
-            // list of user group ids
-            // return posts where target group id or target topic id matches
-            throw new NotImplementedException();
+            User user = await _context.Users.Include(u => u.Topics).Include(u => u.Groups).FirstOrDefaultAsync(u => u.Id == userId);
+            List<Topic> userTopics = user.Topics.ToList();
+            List<Group> userGroups = user.Groups.ToList();
+            List<Post> allPosts = await _context.Posts.ToListAsync();
+            List<Post> returnedPosts = new List<Post>();
+
+            foreach (var post in allPosts)
+            {
+                if (userGroups.Contains(post.TargetGroup))
+                    returnedPosts.Add(post);
+                if (userTopics.Contains(post.TargetTopic))
+                    returnedPosts.Add(post);
+            }
+
+            return returnedPosts;
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
