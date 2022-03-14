@@ -18,10 +18,11 @@ namespace AlumniNetworkAPI.Controllers
         private readonly IPostService _postService;
         private readonly IGroupService _groupService;
 
-        public PostController(IMapper mapper, IPostService postService)
+        public PostController(IMapper mapper, IPostService postService, IGroupService groupService)
         {
             _mapper = mapper;
             _postService = postService;
+            _groupService = groupService;
         }
 
         /// <summary>
