@@ -11,7 +11,7 @@ using AutoMapper;
 namespace AlumniNetworkAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/")]
+    [Route("api/v1/user")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;

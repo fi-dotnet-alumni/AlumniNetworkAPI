@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace AlumniNetworkAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]/")]
+    [Route("api/v1/topic")]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiConventionType(typeof(DefaultApiConventions))]
@@ -50,7 +50,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="id">Topic id</param>
         /// <returns>Found Topic</returns>
-        [HttpGet("/topic/{id}")]
+        [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TopicReadDTO>> GetTopic(int id)
         {
@@ -73,7 +73,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="newTopic">New topic object</param>
         /// <returns>Created topic</returns>
-        [HttpPost("/topic")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateTopic([FromBody] TopicCreateDTO newTopic)
         {
@@ -95,7 +95,7 @@ namespace AlumniNetworkAPI.Controllers
         /// Join/Subscribe to topic
         /// </summary>
         /// <param name="topicId">Topic id</param>
-        [HttpPost("/topic/{topicId}/join")]
+        [HttpPost("{id}/join")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> JoinTopic(int topicId)
         {
