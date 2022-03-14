@@ -7,8 +7,8 @@ using System.Net.Mime;
 
 namespace AlumniNetworkAPI.Controllers
 {
-    [Route("api/post")]
     [ApiController]
+    [Route("api/v1/post")]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiConventionType(typeof(DefaultApiConventions))]
