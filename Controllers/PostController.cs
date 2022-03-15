@@ -21,13 +21,15 @@ namespace AlumniNetworkAPI.Controllers
         private readonly IPostService _postService;
         private readonly IGroupService _groupService;
         private readonly IUserService _userService;
+        private readonly ITopicService _topicService;
 
-        public PostController(IMapper mapper, IPostService postService, IGroupService groupService, IUserService userService)
+        public PostController(IMapper mapper, IPostService postService, IGroupService groupService, IUserService userService, ITopicService topicService)
         {
             _mapper = mapper;
             _postService = postService;
             _groupService = groupService;
             _userService = userService;
+            _topicService = topicService;
         }
 
         /// <summary>
@@ -129,14 +131,17 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet("user/{id}")]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetDirectMessagesFromUser(int id)
         {
+            if(!await _userService.UserExistsAsync(id))
+            {
+                return NotFound($"User does not exist with id {id}");
+            }
+
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
-
-            // TODO: Check if url parameter id exists (user service: UserExists(id)?)
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetDirectMessagePostsFromSpecificUserAsync(user.Id, id));
         }
@@ -156,8 +161,16 @@ namespace AlumniNetworkAPI.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
 
-            // TODO: Check if url parameter id exists (group service: GroupExists(id)?)
-            // TODO: Check if requesting user has group access (group service: UserHasGroupAccess(group, userId)
+            var group = await _groupService.GetSpecificGroupAsync(id);
+            if (group == null)
+            {
+                return NotFound($"Group does not exist with id {id}");
+            }
+
+            if (!await _groupService.UserHasGroupAccess(group, id))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
+            }
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetPostsFromSpecificGroupAsync(id));
         }
@@ -178,7 +191,10 @@ namespace AlumniNetworkAPI.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
 
-            // TODO: Check if url parameter id exists (topic service: TopicExists(id)?)
+            if (!await _topicService.TopicExistsAsync(id))
+            {
+                return NotFound($"Topic does not exist with id {id}");
+            }
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetPostsFromSpecificTopicAsync(id));
         }
@@ -222,8 +238,15 @@ namespace AlumniNetworkAPI.Controllers
 
             if (dtoPost.TargetGroupId.HasValue)
             {
-                // TODO: Check if user has group access in case of private group
-                // return 403 Forbidden if not
+                var group = await _groupService.GetSpecificGroupAsync(dtoPost.TargetGroupId.Value);
+                if (group != null)
+                {
+                    if (!await _groupService.UserHasGroupAccess(group, user.Id))
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
+                    }
+                }
+                return NotFound($"Group not found with id {dtoPost.TargetGroupId.Value}");
             }
 
             domainPost = await _postService.AddPostAsync(domainPost);
@@ -255,7 +278,7 @@ namespace AlumniNetworkAPI.Controllers
 
             if(oldPost.SenderId != user.Id)
             {
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
 
             oldPost.Title = dtoPost.Title;
