@@ -29,17 +29,17 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
-            return await _context.Posts.ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetDirectMessagePostsAsync(int userId)
         {
-            return await _context.Posts.Where(p => p.TargetUserId == userId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetDirectMessagePostsFromSpecificUserAsync(int userId, int senderId)
         {
-            return await _context.Posts.Where(p => p.TargetUserId == userId && p.SenderId == senderId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId && p.SenderId == senderId).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
@@ -47,7 +47,7 @@ namespace AlumniNetworkAPI.Services
             User user = await _context.Users.Include(u => u.Topics).Include(u => u.Groups).FirstOrDefaultAsync(u => u.Id == userId);
             List<Topic> userTopics = user.Topics.ToList();
             List<Group> userGroups = user.Groups.ToList();
-            List<Post> allPosts = await _context.Posts.ToListAsync();
+            List<Post> allPosts = await _context.Posts.Include(p => p.Sender).ToListAsync();
             List<Post> returnedPosts = new List<Post>();
 
             foreach (var post in allPosts)
@@ -63,17 +63,17 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
         {
-            return await _context.Posts.Where(p => p.TargetGroupId == groupId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetGroupId == groupId).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificTopicAsync(int topicId)
         {
-            return await _context.Posts.Where(p => p.TargetTopicId == topicId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetTopicId == topicId).ToListAsync();
         }
 
         public async Task<Post> GetSpecificPostAsync(int postId)
         {
-            return await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            return await _context.Posts.Include(p => p.Sender).FirstOrDefaultAsync(p => p.Id == postId);
         }
 
         public async Task UpdatePostAsync(Post post)
