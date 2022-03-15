@@ -6,6 +6,11 @@ namespace AlumniNetworkAPI.Models.Domain
 {
 	public class Post
 	{
+        public Post()
+        {
+            Replies = new HashSet<Post>();
+        }
+
         [Key]
         public int Id { get; set; }
         [MaxLength(50, ErrorMessage = "Title can't be more than 50 characters long.")]

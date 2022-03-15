@@ -30,24 +30,48 @@ namespace AlumniNetworkAPI.Services
             return await _context.Groups.Include(g => g.Users).Include(g => g.Posts).FirstOrDefaultAsync(g => g.Id == groupId);
         }
 
+        public async Task<IEnumerable<Group>> GetUserGroupsAsync(User user)
+        {
+            List<Group> allGroups = await _context.Groups.Include(g => g.Users).Include(g => g.Posts).ToListAsync();
+            List<Group> returnedGroups = new List<Group>();
+
+            foreach (Group group in allGroups)
+            {
+                if (group.isPrivate)
+                {
+                    if (group.Users.Contains(user))
+                        returnedGroups.Add(group);
+                }
+                // public group
+                else
+                {
+                    returnedGroups.Add(group);
+                }
+            }
+            return returnedGroups;
+        }
+
         public bool GroupExists(int groupId)
         {
             return _context.Groups.Any(g => g.Id == groupId);
         }
 
-        public async Task JoinGroupAsync(Group group, int userId)
+        public async Task JoinGroupAsync(Group group, User user)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             group.Users.Add(user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> UserHasGroupAccess(Group group, int userId)
+        public bool UserHasGroupAccess(Group group, User user)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (group.Users.Contains(user))
-                return true;
-            return false;
+            if (group.isPrivate)
+            {
+                if (group.Users.Contains(user))
+                    return true;
+                else
+                    return false;
+            }
+            return true;
         }
     }
 }
