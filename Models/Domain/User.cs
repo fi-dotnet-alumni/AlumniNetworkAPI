@@ -26,5 +26,6 @@ namespace AlumniNetworkAPI.Models.Domain
         public ICollection<Group> Groups { get; set; }
         public ICollection<Topic> Topics { get; set; }
         public ICollection<Post> Posts { get; set; }
+        public string? KeycloakId { get; set; }
     }
 }
