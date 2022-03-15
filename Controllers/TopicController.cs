@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using System.Security.Claims;
 using AlumniNetworkAPI.Models.Domain;
 using AlumniNetworkAPI.Models.DTO.Topic;
 using AlumniNetworkAPI.Services;
@@ -16,11 +17,13 @@ namespace AlumniNetworkAPI.Controllers
     public class TopicController : ControllerBase
     {
         private readonly ITopicService _topicService;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public TopicController(ITopicService topicService, IMapper mapper)
+        public TopicController(ITopicService topicService, IUserService userService, IMapper mapper)
         {
             _topicService = topicService;
+            _userService = userService;
             _mapper = mapper;
         }
 
@@ -101,11 +104,16 @@ namespace AlumniNetworkAPI.Controllers
         {
             try
             {
-                int DEBUG_UserId = 1; // TODO: Get this info from keycloak
-
-                if(await _topicService.TopicExistsAsync(topicId))
+                string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+                if (user == null)
                 {
-                    await _topicService.JoinTopicAsync(topicId, DEBUG_UserId);
+                    return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+                }
+
+                if (await _topicService.TopicExistsAsync(topicId))
+                {
+                    await _topicService.JoinTopicAsync(topicId, user.Id);
 
                     return Ok();
                 }
