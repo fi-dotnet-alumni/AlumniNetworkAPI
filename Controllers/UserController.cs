@@ -8,6 +8,8 @@ using AlumniNetworkAPI.Extensions;
 using AlumniNetworkAPI.Models.DTO.User;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using AlumniNetworkAPI.Models.Domain;
+using System.Security.Claims;
 
 namespace AlumniNetworkAPI.Controllers
 {    
@@ -76,6 +78,27 @@ namespace AlumniNetworkAPI.Controllers
                 return Ok();
 
             return NotFound();
+        }
+
+        /// <summary>
+        /// Tries to match token subject to an existing database user.
+        /// Creates a new user if not found.
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("login")]
+        public async Task<IActionResult> Login()
+        {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                User newUser = new User();
+                newUser.Name = User.FindFirstValue("preferred_username");
+                newUser.KeycloakId = keycloakId;
+                await _userService.AddUserAsync(newUser);
+            }
+            return Ok("Login successful");
         }
     }
 }
