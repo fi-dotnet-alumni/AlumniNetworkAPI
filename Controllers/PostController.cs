@@ -4,9 +4,12 @@ using AlumniNetworkAPI.Models.Domain;
 using AlumniNetworkAPI.Models.DTO.Post;
 using AlumniNetworkAPI.Services;
 using System.Net.Mime;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AlumniNetworkAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/v1/post")]
     [Produces(MediaTypeNames.Application.Json)]
@@ -17,72 +20,85 @@ namespace AlumniNetworkAPI.Controllers
         private readonly IMapper _mapper;
         private readonly IPostService _postService;
         private readonly IGroupService _groupService;
+        private readonly IUserService _userService;
+        private readonly ITopicService _topicService;
 
-        public PostController(IMapper mapper, IPostService postService, IGroupService groupService)
+        public PostController(IMapper mapper, IPostService postService, IGroupService groupService, IUserService userService, ITopicService topicService)
         {
             _mapper = mapper;
             _postService = postService;
             _groupService = groupService;
+            _userService = userService;
+            _topicService = topicService;
         }
 
         /// <summary>
         /// Returns all posts. Used for development, testing and debugging.
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetAllPosts()
         {
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetAllPostsAsync());
         }
 
-        /*
+        
         /// <summary>
         /// Returns a list of posts to groups and topics for which the requesting user is subscribed to.
         /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
-        {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+        /// <returns></returns
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
+        //{
+        //    string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+        //    if (user == null)
+        //    {
+        //        return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+        //    }
 
-            return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(userId));
-        }
-        */
+        //    return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(user.Id));
+        //}
+        
 
         /// <summary>
         /// Return a post specified by the id if the current user is authorized to access it.
         /// </summary>
         /// <param name="id">Id of the post</param>
-        /// <returns></returns>
+        /// <returns></returns
         [HttpGet("{id}")]
         public async Task<ActionResult<PostReadDTO>> GetPost(int id)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             Post post = await _postService.GetSpecificPostAsync(id);
 
             if (post == null)
             {
                 // 404
-                return NotFound();
+                return NotFound("Post not found");
             }
 
             // check if the post is a direct message
             if (post.TargetUserId != null)
             {
                 // check if the message was for someone else and it wasn't sent by the requesting user
-                if (post.TargetUserId != userId && post.SenderId != userId)
-                    return StatusCode(403);
+                if (post.TargetUserId != user.Id && post.SenderId != user.Id)
+                    return StatusCode(StatusCodes.Status403Forbidden, "You have no permission to view this post");
             }
 
             // check if the post belongs to a private group
             if (post.TargetGroup != null)
             {
-                if (!await _groupService.UserHasGroupAccess(post.TargetGroup, userId))
+                if (!await _groupService.UserHasGroupAccess(post.TargetGroup, user.Id))
                 {
-                    return StatusCode(403);
+                    return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
                 }
             }
             
@@ -96,10 +112,14 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet("user")]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetDirectMessages()
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
-            return _mapper.Map<List<PostReadDTO>>(await _postService.GetDirectMessagePostsAsync(userId));
+            return _mapper.Map<List<PostReadDTO>>(await _postService.GetDirectMessagePostsAsync(user.Id));
         }
 
         /// <summary>
@@ -111,12 +131,19 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet("user/{id}")]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetDirectMessagesFromUser(int id)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            if(!await _userService.UserExistsAsync(id))
+            {
+                return NotFound($"User does not exist with id {id}");
+            }
 
-            // TODO: Check if url parameter id exists (user service: UserExists(id)?)
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
-            return _mapper.Map<List<PostReadDTO>>(await _postService.GetDirectMessagePostsFromSpecificUserAsync(userId, id));
+            return _mapper.Map<List<PostReadDTO>>(await _postService.GetDirectMessagePostsFromSpecificUserAsync(user.Id, id));
         }
 
         /// <summary>
@@ -127,11 +154,23 @@ namespace AlumniNetworkAPI.Controllers
         [HttpGet("group/{id}")]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPostsFromSpecificGroup(int id)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
-            // TODO: Check if url parameter id exists (group service: GroupExists(id)?)
-            // TODO: Check if requesting user has group access (group service: UserHasGroupAccess(group, userId)
+            var group = await _groupService.GetSpecificGroupAsync(id);
+            if (group == null)
+            {
+                return NotFound($"Group does not exist with id {id}");
+            }
+
+            if (!await _groupService.UserHasGroupAccess(group, id))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
+            }
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetPostsFromSpecificGroupAsync(id));
         }
@@ -141,13 +180,21 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="id">Id of the topic</param>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("topic/{id}")]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPostsFromSpecificTopic(int id)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
-            // TODO: Check if url parameter id exists (topic service: TopicExists(id)?)
+            if (!await _topicService.TopicExistsAsync(id))
+            {
+                return NotFound($"Topic does not exist with id {id}");
+            }
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetPostsFromSpecificTopicAsync(id));
         }
@@ -160,13 +207,17 @@ namespace AlumniNetworkAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Post>> CreatePost(PostCreateDTO dtoPost)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             Post domainPost = _mapper.Map<Post>(dtoPost);
 
             // add requesting user as the sender
-            domainPost.SenderId = userId;
+            domainPost.SenderId = user.Id;
 
             // make sure post has only one target audience
             // TODO: Check if Ids are valid since otherwise the foreign keys will cause an error
@@ -187,8 +238,15 @@ namespace AlumniNetworkAPI.Controllers
 
             if (dtoPost.TargetGroupId.HasValue)
             {
-                // TODO: Check if user has group access in case of private group
-                // return 403 Forbidden if not
+                var group = await _groupService.GetSpecificGroupAsync(dtoPost.TargetGroupId.Value);
+                if (group != null)
+                {
+                    if (!await _groupService.UserHasGroupAccess(group, user.Id))
+                    {
+                        return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
+                    }
+                }
+                return NotFound($"Group not found with id {dtoPost.TargetGroupId.Value}");
             }
 
             domainPost = await _postService.AddPostAsync(domainPost);
@@ -205,8 +263,12 @@ namespace AlumniNetworkAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePost(int id, PostEditDTO dtoPost)
         {
-            // TODO: Get user id from JWT token
-            int userId = 1;
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             Post oldPost = await _postService.GetSpecificPostAsync(id);
             if (oldPost == null)
@@ -214,9 +276,9 @@ namespace AlumniNetworkAPI.Controllers
                 return NotFound();
             }
 
-            if(oldPost.SenderId != userId)
+            if(oldPost.SenderId != user.Id)
             {
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden);
             }
 
             oldPost.Title = dtoPost.Title;
