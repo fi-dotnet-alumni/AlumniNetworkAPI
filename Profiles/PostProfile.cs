@@ -13,6 +13,9 @@ namespace AlumniNetworkAPI.Profiles
                 // turn related replies into a list of ints
                 .ForMember(pdto => pdto.Replies, opt => opt
                 .MapFrom(p => p.Replies.Select(r => r.Id).ToList()))
+                // include sender name
+                .ForMember(pdto => pdto.SenderName, opt => opt
+                .MapFrom(p => p.Sender.Name))
                 .ReverseMap();
 
             // Post<->PostCreateDTO
