@@ -14,6 +14,18 @@ namespace AlumniNetworkAPI.Services
             _context = context;
 		}
 
+        public async Task<User> AddUserAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        public async Task<User> FindUserByKeycloakIdAsync(string keycloakId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.KeycloakId == keycloakId);
+        }
+
         public Task Get()
         {
             // TODO: Get current user data from keycloak
