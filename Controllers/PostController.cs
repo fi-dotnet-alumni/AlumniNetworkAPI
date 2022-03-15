@@ -96,7 +96,7 @@ namespace AlumniNetworkAPI.Controllers
             // check if the post belongs to a private group
             if (post.TargetGroup != null)
             {
-                if (!await _groupService.UserHasGroupAccess(post.TargetGroup, user.Id))
+                if (!_groupService.UserHasGroupAccess(post.TargetGroup, user))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
                 }
@@ -167,7 +167,7 @@ namespace AlumniNetworkAPI.Controllers
                 return NotFound($"Group does not exist with id {id}");
             }
 
-            if (!await _groupService.UserHasGroupAccess(group, id))
+            if (!_groupService.UserHasGroupAccess(group, user))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
             }
@@ -233,7 +233,7 @@ namespace AlumniNetworkAPI.Controllers
 
             if (targetsSpecified > 1 || targetsSpecified == 0)
             {
-                return BadRequest();
+                return BadRequest("Can't specify multiple target audiences");
             }
 
             if (dtoPost.TargetGroupId.HasValue)
@@ -241,7 +241,7 @@ namespace AlumniNetworkAPI.Controllers
                 var group = await _groupService.GetSpecificGroupAsync(dtoPost.TargetGroupId.Value);
                 if (group != null)
                 {
-                    if (!await _groupService.UserHasGroupAccess(group, user.Id))
+                    if (!_groupService.UserHasGroupAccess(group, user))
                     {
                         return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
                     }

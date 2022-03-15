@@ -5,6 +5,13 @@ namespace AlumniNetworkAPI.Models.Domain
 {
 	public class User
 	{
+        public User()
+        {
+            Groups = new HashSet<Group>();
+            Topics = new HashSet<Topic>();
+            Posts = new HashSet<Post>();
+        }
+
         [Key]
         public int Id { get; set; }
 

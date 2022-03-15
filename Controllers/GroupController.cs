@@ -38,6 +38,10 @@ namespace AlumniNetworkAPI.Controllers
             // extract subject from token and find corresponding user
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             return _mapper.Map<List<GroupReadDTO>>(await _groupService.GetUserGroupsAsync(user));
         }
@@ -54,19 +58,23 @@ namespace AlumniNetworkAPI.Controllers
             // extract subject from token and find corresponding user
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             Group group = await _groupService.GetSpecificGroupAsync(id);
 
             if (group == null)
             {
-                return NotFound();
+                return NotFound($"Group does not exist with id {id}");
             }
 
             // check if the requesting user has access to the group
             if (!_groupService.UserHasGroupAccess(group, user))
             {
                 // return 403 Forbidden
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
             }
             
             return _mapper.Map<GroupReadDTO>(group);
@@ -84,6 +92,10 @@ namespace AlumniNetworkAPI.Controllers
             // extract subject from token and find corresponding user
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
             Group domainGroup = _mapper.Map<Group>(dtoGroup);
 
@@ -110,11 +122,13 @@ namespace AlumniNetworkAPI.Controllers
             // extract subject from token and find corresponding user
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User requestingUser = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (requestingUser == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
             User joiningUser = new User();
 
-            //int requestingUserId = requestingUser.Id;
-
-            // check request body for user id, use requesting user's id otherwise
+            // check request body for user id, use requesting user otherwise
             if (userId == default)
             {
                 joiningUser = requestingUser;
@@ -132,7 +146,7 @@ namespace AlumniNetworkAPI.Controllers
             // invalid group id
             if (!_groupService.GroupExists(id))
             {
-                return NotFound();
+                return NotFound($"Group does not exist with id {id}");
             }
 
             Group group = await _groupService.GetSpecificGroupAsync(id);
@@ -141,7 +155,7 @@ namespace AlumniNetworkAPI.Controllers
             if (!_groupService.UserHasGroupAccess(group, requestingUser))
             {
                 // 403 Forbidden
-                return StatusCode(403);
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
             }
             else
             {
