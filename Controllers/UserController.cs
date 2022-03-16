@@ -43,10 +43,6 @@ namespace AlumniNetworkAPI.Controllers
         {
 
             return User.Identity.IsAuthenticated ? this.SeeOther("/") : NotFound("Could not authenticate user");
-
-            //if (User.Identity.IsAuthenticated)
-            //    return this.SeeOther("/");
-            //return NotFound("Could not authenticate user");
         }
 
         /// <summary>
