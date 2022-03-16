@@ -41,8 +41,19 @@ namespace AlumniNetworkAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserAsync()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return StatusCode(StatusCodes.Status401Unauthorized, "User not authenticated");
+            }
 
-            return User.Identity.IsAuthenticated ? this.SeeOther("/") : NotFound("Could not authenticate user");
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user != null)
+            {
+                return this.SeeOther($"/user/{user.Id}");
+            }
+
+            return BadRequest();
         }
 
         /// <summary>
