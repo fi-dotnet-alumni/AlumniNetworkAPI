@@ -29,17 +29,17 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
-            return await _context.Posts.Include(p => p.Sender).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetDirectMessagePostsAsync(int userId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetDirectMessagePostsFromSpecificUserAsync(int userId, int senderId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId && p.SenderId == senderId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetUserId == userId && p.SenderId == senderId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetGroupAndTopicPostsAsync(int userId)
@@ -58,17 +58,17 @@ namespace AlumniNetworkAPI.Services
                     returnedPosts.Add(post);
             }
 
-            return returnedPosts;
+            return returnedPosts.OrderByDescending(p => p.Timestamp);
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetGroupId == groupId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetGroupId == groupId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificTopicAsync(int topicId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetTopicId == topicId).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetTopicId == topicId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<Post> GetSpecificPostAsync(int postId)
