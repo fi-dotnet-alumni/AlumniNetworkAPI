@@ -10,11 +10,16 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using AlumniNetworkAPI.Models.Domain;
 using System.Security.Claims;
+using System.Net.Mime;
 
 namespace AlumniNetworkAPI.Controllers
-{    
+{
+    [Authorize]
     [ApiController]
     [Route("api/v1/user")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
+    [ApiConventionType(typeof(DefaultApiConventions))]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -30,13 +35,18 @@ namespace AlumniNetworkAPI.Controllers
         /// Shorthand for fetching currently authenticated user
         /// </summary>
         /// <returns>Redirects to users page</returns>
+        [AllowAnonymous]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status303SeeOther)]
-        public IActionResult GetUser()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUserAsync()
         {
-            // TODO: Add keycloack user fetching here
 
-            return this.SeeOther("/");
+            return User.Identity.IsAuthenticated ? this.SeeOther("/") : NotFound("Could not authenticate user");
+
+            //if (User.Identity.IsAuthenticated)
+            //    return this.SeeOther("/");
+            //return NotFound("Could not authenticate user");
         }
 
         /// <summary>
@@ -44,9 +54,7 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="id">User ID</param>
         /// <returns>Information about the user</returns>
-        [Authorize]
         [HttpGet("{id}")]
-        [Produces("application/json")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserReadDTO>> GetUserInfo(int id)
         {
@@ -57,19 +65,12 @@ namespace AlumniNetworkAPI.Controllers
             return Ok(_mapper.Map<UserReadDTO>(info));
         }
 
-        [Authorize]
-        [HttpGet("test")]
-        public async Task<IActionResult> Test(int id)
-        {
-            return Ok("Accessed hidden endpoint! Everything works");
-        }
-
         /// <summary>
         /// Updates user with given id
         /// </summary>
         /// <param name="id">User ID</param>
         [HttpPatch("{id}")]
-        [Produces("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserUpdateDTO updatedUser)
         {
@@ -85,8 +86,8 @@ namespace AlumniNetworkAPI.Controllers
         /// Creates a new user if not found.
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Login()
         {
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
