@@ -30,7 +30,7 @@ Alumni Network API is a ASP.NET Core Web API that provides endpoints for [Alumni
 
 [Local Development Setup](Documentation/local_development.md)
 
-[Azure Deployment Setup]()
+[Azure Deployment Setup](Documentation/azure_deployment.md)
 
 ## Contributors
 
