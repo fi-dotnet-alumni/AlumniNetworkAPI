@@ -37,8 +37,9 @@ namespace AlumniNetworkAPI.Controllers
         /// <returns>Redirects to users page</returns>
         [AllowAnonymous]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status303SeeOther)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAsync()
         {
             if (!User.Identity.IsAuthenticated)
@@ -50,7 +51,7 @@ namespace AlumniNetworkAPI.Controllers
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
             if (user != null)
             {
-                return this.SeeOther($"/user/{user.Id}");
+                return Ok(_mapper.Map<UserReadDTO>(user));
             }
 
             return BadRequest();
