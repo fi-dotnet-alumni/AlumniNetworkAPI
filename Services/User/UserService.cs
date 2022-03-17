@@ -35,7 +35,7 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<User> GetInfoAsync(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _context.Users.Include(t => t.Topics).Include(t => t.Groups).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<bool> UpdateAsync(int id, UserUpdateDTO updatedUser)
