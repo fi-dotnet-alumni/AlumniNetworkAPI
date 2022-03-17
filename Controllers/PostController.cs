@@ -273,12 +273,12 @@ namespace AlumniNetworkAPI.Controllers
             Post oldPost = await _postService.GetSpecificPostAsync(id);
             if (oldPost == null)
             {
-                return NotFound();
+                return NotFound($"Post does not exist with id {id}");
             }
 
             if(oldPost.SenderId != user.Id)
             {
-                return StatusCode(StatusCodes.Status403Forbidden);
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to post");
             }
 
             oldPost.Title = dtoPost.Title;

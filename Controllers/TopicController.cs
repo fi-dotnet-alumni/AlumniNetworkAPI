@@ -4,6 +4,7 @@ using AlumniNetworkAPI.Models.Domain;
 using AlumniNetworkAPI.Models.DTO.Topic;
 using AlumniNetworkAPI.Services;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -31,21 +32,12 @@ namespace AlumniNetworkAPI.Controllers
         /// Returns list of all available topics
         /// </summary>
         /// <returns>List of topics</returns>
+        [Authorize]
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<TopicReadDTO>>> GetAllTopics()
         {
-            try
-            {
-                var topics = await _topicService.GetAllTopicsAsync();
-                return Ok(_mapper.Map<IEnumerable<TopicReadDTO>>(topics));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            return BadRequest();
+            var topics = await _topicService.GetAllTopicsAsync();
+            return Ok(_mapper.Map<IEnumerable<TopicReadDTO>>(topics));
         }
 
         /// <summary>
@@ -53,22 +45,19 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="id">Topic id</param>
         /// <returns>Found Topic</returns>
+        [Authorize]
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<TopicReadDTO>> GetTopic(int id)
         {
-            try
+            var topic = await _topicService.GetTopicAsync(id);
+            if(topic == null)
             {
-                var topic = await _topicService.GetTopicAsync(id);
-                if(topic != null)
-                    return Ok(_mapper.Map<TopicReadDTO>(topic));
+                return NotFound($"Topic does not exist with id {id}");
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-
-            return BadRequest();
+            
+            return Ok(_mapper.Map<TopicReadDTO>(topic));
+            
+            
         }
 
         /// <summary>
@@ -76,54 +65,39 @@ namespace AlumniNetworkAPI.Controllers
         /// </summary>
         /// <param name="newTopic">New topic object</param>
         /// <returns>Created topic</returns>
+        [Authorize]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateTopic([FromBody] TopicCreateDTO newTopic)
+        public async Task<IActionResult> CreateTopic(TopicCreateDTO newTopic)
         {
-            try
-            {
-                var createdTopic = await _topicService.CreateTopicAsync(_mapper.Map<Topic>(newTopic));
-                if(createdTopic != null)
-                    return CreatedAtAction("CreateTopic", _mapper.Map<TopicReadDTO>(createdTopic));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            var createdTopic = await _topicService.CreateTopicAsync(_mapper.Map<Topic>(newTopic));
 
-            return BadRequest();
+            return CreatedAtAction("GetTopic", new { id = createdTopic.Id }, _mapper.Map<TopicReadDTO>(createdTopic));
         }
 
         /// <summary>
         /// Join/Subscribe to topic
         /// </summary>
-        /// <param name="topicId">Topic id</param>
+        /// <param name="id">Topic id</param>
+        [Authorize]
         [HttpPost("{id}/join")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> JoinTopic(int topicId)
+        public async Task<IActionResult> JoinTopic(int id)
         {
-            try
-            {
-                string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
-                if (user == null)
-                {
-                    return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
-                }
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
 
-                if (await _topicService.TopicExistsAsync(topicId))
-                {
-                    await _topicService.JoinTopicAsync(topicId, user.Id);
-
-                    return Ok();
-                }
-            }
-            catch (Exception ex)
+            if (user == null)
             {
-                Console.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
 
-            return BadRequest();
+            if (!await _topicService.TopicExistsAsync(id))
+            {
+                return NotFound($"Topic does not exist with id {id}");
+            }
+
+            await _topicService.JoinTopicAsync(id, user.Id);
+
+            return NoContent();
         }
     }
 }
