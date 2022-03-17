@@ -49,11 +49,14 @@ namespace AlumniNetworkAPI.Services
                 if (updatedUser.FunFact != foundUser.FunFact)
                     foundUser.FunFact = updatedUser.FunFact;
 
-                if (updatedUser.PictureURL != updatedUser.PictureURL)
+                if (updatedUser.PictureURL != foundUser.PictureURL)
                     foundUser.PictureURL = updatedUser.PictureURL;
 
                 if (updatedUser.Name != foundUser.Name)
                     foundUser.Name = updatedUser.Name;
+
+                if (updatedUser.Status != foundUser.Status)
+                    foundUser.Status = updatedUser.Status;
 
                 return await _context.SaveChangesAsync() > 0;
             }

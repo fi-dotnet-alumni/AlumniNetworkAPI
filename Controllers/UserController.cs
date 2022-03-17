@@ -34,59 +34,48 @@ namespace AlumniNetworkAPI.Controllers
         /// <summary>
         /// Shorthand for fetching currently authenticated user
         /// </summary>
-        /// <returns>Redirects to users page</returns>
-        [AllowAnonymous]
+        /// <returns></returns>
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetUserAsync()
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return StatusCode(StatusCodes.Status401Unauthorized, "User not authenticated");
-            }
-
+        { 
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
-            if (user != null)
+            if (user == null)
             {
-                return Ok(_mapper.Map<UserReadDTO>(user));
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
-
-            return BadRequest();
+            return this.SeeOther($"/api/v1/user/{user.Id}");
         }
 
         /// <summary>
         /// Gets users info with given id
         /// </summary>
-        /// <param name="id">User ID</param>
+        /// <param name="id">User id</param>
         /// <returns>Information about the user</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<UserReadDTO>> GetUserInfo(int id)
         {
-            var info = await _userService.GetInfoAsync(id);
-            if (info == null)
-                return NotFound($"Could not find player info with id {id}");
+            User user = await _userService.GetInfoAsync(id);
+            if (user == null)
+                return NotFound($"Could not find user with id {id}");
 
-            return Ok(_mapper.Map<UserReadDTO>(info));
+            return Ok(_mapper.Map<UserReadDTO>(user));
         }
 
         /// <summary>
         /// Updates user with given id
         /// </summary>
-        /// <param name="id">User ID</param>
+        /// <param name="id">User id</param>
+        /// <param name="updatedUser">Updated user object</param>
         [HttpPatch("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateUserAsync(int id, [FromBody] UserUpdateDTO updatedUser)
+        public async Task<IActionResult> UpdateUserAsync(int id, UserUpdateDTO updatedUser)
         {
-            bool updated = await _userService.UpdateAsync(id, updatedUser);
-            if (updated)
-                return Ok();
-
-            return NotFound();
+            if (!await _userService.UserExistsAsync(id))
+            {
+                return NotFound($"Could not find user with id {id}");
+            }
+            await _userService.UpdateAsync(id, updatedUser);
+            return NoContent();
         }
 
         /// <summary>

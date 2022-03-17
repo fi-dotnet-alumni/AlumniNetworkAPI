@@ -15,7 +15,7 @@ namespace AlumniNetworkAPI.Profiles
 					.MapFrom(u => u.Topics.Select(j => j.Id).ToList()))
 				// turn related Groups into a list of ints
 				.ForMember(udto => udto.Groups, opt => opt
-					.MapFrom(u => u.Topics.Select(j => j.Id).ToList()))
+					.MapFrom(u => u.Groups.Select(j => j.Id).ToList()))
 				.ReverseMap();
 			CreateMap<User, UserUpdateDTO>()
 				.ReverseMap();
