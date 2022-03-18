@@ -13,7 +13,7 @@ namespace AlumniNetworkAPI.Services
         }
         public async Task<Post> AddPostAsync(Post post)
         {
-            post.Timestamp = DateTime.Now;
+            post.Timestamp = DateTime.UtcNow;
             _context.Posts.Add(post);
             if (post.ReplyParentId != null)
             {
@@ -84,7 +84,7 @@ namespace AlumniNetworkAPI.Services
         public async Task UpdatePostAsync(Post post)
         {
             // should timestamp be modified? effects on the order of posts?
-            post.Timestamp = DateTime.Now;
+            post.Timestamp = DateTime.UtcNow;
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
