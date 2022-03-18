@@ -47,7 +47,7 @@ namespace AlumniNetworkAPI.Controllers
         /// <summary>
         /// Returns a list of posts to groups and topics for which the requesting user is subscribed to.
         /// </summary>
-        /// <returns></returns
+        /// <returns></returns>
         //[HttpGet]
         //public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
         //{
@@ -66,7 +66,7 @@ namespace AlumniNetworkAPI.Controllers
         /// Return a post specified by the id if the current user is authorized to access it.
         /// </summary>
         /// <param name="id">Id of the post</param>
-        /// <returns></returns
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<PostReadDTO>> GetPost(int id)
         {
@@ -220,33 +220,65 @@ namespace AlumniNetworkAPI.Controllers
             domainPost.SenderId = user.Id;
 
             // make sure post has only one target audience
-            // TODO: Check if Ids are valid since otherwise the foreign keys will cause an error
+
             int targetsSpecified = 0;
+
+            // check if specified reply parent exists
             if (dtoPost.ReplyParentId != null)
+            {
+                if (!await _postService.PostExistsAsync(dtoPost.ReplyParentId.Value))
+                {
+                    return NotFound($"Reply parent post does not exist with id {dtoPost.ReplyParentId}");
+                }
                 targetsSpecified++;
+            }
+
+            // check if specified target topic exists
             if (dtoPost.TargetTopicId != null)
+            {
+                if (!await _topicService.TopicExistsAsync(dtoPost.TargetTopicId.Value))
+                {
+                    return NotFound($"Target topic does not exist with id {dtoPost.TargetTopicId}");
+                }
                 targetsSpecified++;
+            }
+
+            // check if specified target user exists
             if (dtoPost.TargetUserId != null)
+            {
+                if (!await _userService.UserExistsAsync(dtoPost.TargetUserId.Value))
+                {
+                    return NotFound($"Target user does not exist with id {dtoPost.TargetUserId}");
+                }
                 targetsSpecified++;
+            }
+
             if (dtoPost.TargetGroupId != null)
                 targetsSpecified++;
 
-            if (targetsSpecified > 1 || targetsSpecified == 0)
+            if (targetsSpecified > 1)
             {
-                return BadRequest("Can't specify multiple target audiences");
+                return BadRequest("Cannot specify multiple target audiences");
             }
 
-            if (dtoPost.TargetGroupId.HasValue)
+            if (targetsSpecified == 0)
+            {
+                return BadRequest("One target audience must be specified");
+            }
+
+            // check if specified target group exists
+            if (dtoPost.TargetGroupId != null)
             {
                 var group = await _groupService.GetSpecificGroupAsync(dtoPost.TargetGroupId.Value);
-                if (group != null)
+                if (group == null)
                 {
-                    if (!_groupService.UserHasGroupAccess(group, user))
-                    {
-                        return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
-                    }
+                    return NotFound($"Group not found with id {dtoPost.TargetGroupId.Value}");
                 }
-                return NotFound($"Group not found with id {dtoPost.TargetGroupId.Value}");
+                // check if requesting user has group access
+                if (!_groupService.UserHasGroupAccess(group, user))
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, "Missing group access");
+                }
             }
 
             domainPost = await _postService.AddPostAsync(domainPost);

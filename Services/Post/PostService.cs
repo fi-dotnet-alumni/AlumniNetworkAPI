@@ -76,6 +76,11 @@ namespace AlumniNetworkAPI.Services
             return await _context.Posts.Include(p => p.Sender).FirstOrDefaultAsync(p => p.Id == postId);
         }
 
+        public async Task<bool> PostExistsAsync(int postId)
+        {
+            return await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId) != null;
+        }
+
         public async Task UpdatePostAsync(Post post)
         {
             // should timestamp be modified? effects on the order of posts?
