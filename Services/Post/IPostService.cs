@@ -14,5 +14,6 @@ namespace AlumniNetworkAPI.Services
         // temporary method for testing purposes
         public Task<IEnumerable<Post>> GetAllPostsAsync();
         public Task<Post> GetSpecificPostAsync(int postId);
+        public Task<bool> PostExistsAsync(int postId);
     }
 }
