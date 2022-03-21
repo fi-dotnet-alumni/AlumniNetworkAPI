@@ -94,6 +94,7 @@ namespace AlumniNetworkAPI.Controllers
                 User newUser = new User();
                 newUser.Name = User.FindFirstValue("preferred_username");
                 newUser.KeycloakId = keycloakId;
+                newUser.PictureURL = "https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png";
                 await _userService.AddUserAsync(newUser);
             }
             return Ok("Login successful");
