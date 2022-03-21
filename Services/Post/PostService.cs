@@ -27,6 +27,13 @@ namespace AlumniNetworkAPI.Services
             return post;
         }
 
+        public async Task DeletePostAsync(int postId)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             return await _context.Posts.Include(p => p.Sender).OrderByDescending(p => p.Timestamp).ToListAsync();

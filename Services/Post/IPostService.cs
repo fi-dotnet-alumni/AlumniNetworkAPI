@@ -15,5 +15,6 @@ namespace AlumniNetworkAPI.Services
         public Task<IEnumerable<Post>> GetAllPostsAsync();
         public Task<Post> GetSpecificPostAsync(int postId);
         public Task<bool> PostExistsAsync(int postId);
+        public Task DeletePostAsync(int postId);
     }
 }

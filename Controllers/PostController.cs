@@ -319,5 +319,38 @@ namespace AlumniNetworkAPI.Controllers
 
             return NoContent();
         }
+
+        /// <summary>
+        /// Deletes a post. Only the sender is authorized to delete it.
+        /// </summary>
+        /// <param name="id">Id of the post</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePost(int id)
+        {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
+
+            Post post = await _postService.GetSpecificPostAsync(id);
+
+            if (post == null)
+            {
+                return NotFound($"Post does not exist with id {id}");
+            }
+
+            if (post.SenderId != user.Id)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Only the original sender can delete a post");
+            }
+
+            await _postService.DeletePostAsync(id);
+
+            return NoContent();
+        }
     }
 }
