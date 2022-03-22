@@ -32,35 +32,34 @@ namespace AlumniNetworkAPI.Controllers
             _topicService = topicService;
         }
 
-        /// <summary>
-        /// Returns all posts. Used for development, testing and debugging.
-        /// </summary>
-        /// <returns></returns>
+        /*
+         * Development endpoint for debugging
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetAllPosts()
         {
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetAllPostsAsync());
         }
+        */
 
-        
+
         /// <summary>
         /// Returns a list of posts to groups and topics for which the requesting user is subscribed to.
         /// </summary>
         /// <returns></returns>
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
-        //{
-        //    string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
-        //    if (user == null)
-        //    {
-        //        return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
-        //    }
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetPosts()
+        {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
 
-        //    return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(user.Id));
-        //}
-        
+            return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(user.Id));
+        }
+
 
         /// <summary>
         /// Return a post specified by the id if the current user is authorized to access it.
