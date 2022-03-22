@@ -32,17 +32,18 @@ namespace AlumniNetworkAPI.Controllers
             _topicService = topicService;
         }
 
-        /*
-         * Development endpoint for debugging
+        /// <summary>
+        /// Dev endpoint
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PostReadDTO>>> GetAllPosts()
         {
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetAllPostsAsync());
         }
-        */
 
-
+        /*
         /// <summary>
         /// Returns a list of posts to groups and topics for which the requesting user is subscribed to.
         /// </summary>
@@ -59,6 +60,7 @@ namespace AlumniNetworkAPI.Controllers
 
             return _mapper.Map<List<PostReadDTO>>(await _postService.GetGroupAndTopicPostsAsync(user.Id));
         }
+        */
 
 
         /// <summary>

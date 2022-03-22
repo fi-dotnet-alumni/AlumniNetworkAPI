@@ -55,7 +55,7 @@ namespace AlumniNetworkAPI.Services
             User user = await _context.Users.Include(u => u.Topics).Include(u => u.Groups).FirstOrDefaultAsync(u => u.Id == userId);
             List<Topic> userTopics = user.Topics.ToList();
             List<Group> userGroups = user.Groups.ToList();
-            List<Post> allPosts = await _context.Posts.Include(p => p.Sender).ToListAsync();
+            List<Post> allPosts = await _context.Posts.Include(p => p.Sender).Include(p => p.TargetGroup).Include(p => p.TargetTopic).ToListAsync();
             List<Post> returnedPosts = new List<Post>();
 
             foreach (var post in allPosts)
