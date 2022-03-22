@@ -97,7 +97,7 @@ namespace AlumniNetworkAPI.Controllers
 
             await _topicService.JoinTopicAsync(id, user.Id);
 
-            return NoContent();
+            return Ok("Subscribed");
         }
     }
 }
