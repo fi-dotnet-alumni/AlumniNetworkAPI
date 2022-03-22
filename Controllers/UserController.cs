@@ -70,9 +70,21 @@ namespace AlumniNetworkAPI.Controllers
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateUserAsync(int id, UserUpdateDTO updatedUser)
         {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
+
             if (!await _userService.UserExistsAsync(id))
             {
                 return NotFound($"Could not find user with id {id}");
+            }
+
+            if (id != user.Id)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: You can only edit your own profile");
             }
             await _userService.UpdateAsync(id, updatedUser);
             return NoContent();
