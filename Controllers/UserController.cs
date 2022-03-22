@@ -23,12 +23,14 @@ namespace AlumniNetworkAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ITopicService _topicService;
         private readonly IMapper _mapper;
 
-        public UserController(IUserService userService, IMapper mapper)
+        public UserController(IUserService userService, IMapper mapper, ITopicService topicService)
         {
             _userService = userService;
             _mapper = mapper;
+            _topicService = topicService;
         }
 
         /// <summary>
@@ -108,6 +110,10 @@ namespace AlumniNetworkAPI.Controllers
                 newUser.KeycloakId = keycloakId;
                 newUser.PictureURL = "https://www.pngitem.com/pimgs/m/30-307416_profile-icon-png-image-free-download-searchpng-employee.png";
                 await _userService.AddUserAsync(newUser);
+                User createdUser = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+                // join general topic by default
+                await _topicService.JoinTopicAsync(4, createdUser.Id);
+
             }
             return Ok("Login successful");
         }
