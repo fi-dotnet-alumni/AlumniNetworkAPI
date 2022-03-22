@@ -83,6 +83,12 @@ namespace AlumniNetworkAPI.Data
                     Id = 3,
                     Name = "React",
                     Description =  "Everything React related"
+                },
+                new Topic
+                {
+                    Id = 4,
+                    Name = "General",
+                    Description = "This topic is intended for general discussion"
                 }
             );
 
