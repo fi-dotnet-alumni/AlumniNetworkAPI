@@ -99,7 +99,7 @@ namespace AlumniNetworkAPI.Data
                     Id = 1,
                     Title = "Deploying ASP NET Core API to Azure",
                     Body = "Do you use Azure App Service? I have no clue.",
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Parse("2022-03-10T11:51:38.4490151"),
                     SenderId = 1,
                     TargetTopicId = 1
                 },
@@ -108,7 +108,7 @@ namespace AlumniNetworkAPI.Data
                     Id = 2,
                     Title = "Deploying ASP NET Core API to Azure",
                     Body = "Yes. Do not use API Management though.",
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Parse("2022-03-10T11:53:38.4490151"),
                     SenderId = 2,
                     ReplyParentId = 1,
                 },
@@ -117,7 +117,7 @@ namespace AlumniNetworkAPI.Data
                     Id = 3,
                     Title = "Do you need help with the deployment",
                     Body = "I can answer your questions.",
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Parse("2022-03-10T11:54:38.4490151"),
                     SenderId = 2,
                     TargetUserId = 1
                 },
@@ -126,7 +126,7 @@ namespace AlumniNetworkAPI.Data
                     Id = 4,
                     Title = "What is the purpose of this group?",
                     Body = "I don't get it.",
-                    Timestamp = DateTime.Now,
+                    Timestamp = DateTime.Parse("2022-03-10T11:57:38.4490151"),
                     SenderId = 1,
                     TargetGroupId = 1
                 }
