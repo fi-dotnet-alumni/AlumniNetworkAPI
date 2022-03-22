@@ -27,6 +27,14 @@ namespace AlumniNetworkAPI.Services
             return post;
         }
 
+        public async Task DeletePostAsync(int postId)
+        {
+            var post = await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId);
+            await RemoveReplies(post.Id);
+            _context.Posts.Remove(post);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<IEnumerable<Post>> GetAllPostsAsync()
         {
             return await _context.Posts.Include(p => p.Sender).OrderByDescending(p => p.Timestamp).ToListAsync();
@@ -79,6 +87,16 @@ namespace AlumniNetworkAPI.Services
         public async Task<bool> PostExistsAsync(int postId)
         {
             return await _context.Posts.FirstOrDefaultAsync(p => p.Id == postId) != null;
+        }
+
+        public async Task RemoveReplies(int postId)
+        {
+            var replies = await _context.Posts.Where(p => p.ReplyParentId == postId).ToListAsync();
+            foreach (var reply in replies)
+            {
+                await RemoveReplies(reply.Id);
+                _context.Posts.Remove(reply);
+            }
         }
 
         public async Task UpdatePostAsync(Post post)
