@@ -117,7 +117,7 @@ namespace AlumniNetworkAPI.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost("{id}/join")]
-        public async Task<IActionResult> JoinGroup(int id, [FromBody] int userId = default)
+        public async Task<IActionResult> JoinGroup(int id, [FromBody] int? userId = null)
         {
             // extract subject from token and find corresponding user
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -129,18 +129,18 @@ namespace AlumniNetworkAPI.Controllers
             User joiningUser = new User();
 
             // check request body for user id, use requesting user otherwise
-            if (userId == default)
+            if (userId == null)
             {
                 joiningUser = requestingUser;
             }
             // user id provided in request body
             else
             {
-                if (!await _userService.UserExistsAsync(userId))
+                if (!await _userService.UserExistsAsync(userId.Value))
                 {
                     return BadRequest("Invalid user id provided.");
                 }
-                joiningUser = await _userService.GetInfoAsync(userId);
+                joiningUser = await _userService.GetInfoAsync(userId.Value);
             }
 
             // invalid group id

@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers(x => x.AllowEmptyInputInBodyModelBinding = true);
 
 builder.Services.AddScoped(typeof(IGroupService), typeof(GroupService));
 builder.Services.AddScoped<IUserService, UserSevice>();
