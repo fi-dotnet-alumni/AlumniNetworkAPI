@@ -117,6 +117,23 @@ namespace AlumniNetworkAPI.Controllers
             }
             return Ok("Login successful");
         }
+
+        /// <summary>
+        /// Returns all users.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("all")]
+        public async Task<ActionResult<IEnumerable<UserReadDTO>>> GetAllUsers()
+        {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
+
+            return _mapper.Map<List<UserReadDTO>>(await _userService.GetAllUsersAsync());
+        }
     }
 }
 

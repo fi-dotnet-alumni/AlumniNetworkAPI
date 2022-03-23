@@ -11,5 +11,6 @@ namespace AlumniNetworkAPI.Services
 		Task<bool> UserExistsAsync(int id);
 		Task<User> AddUserAsync(User user);
 		Task<User> FindUserByKeycloakIdAsync(string keycloakId);
+		Task<IEnumerable<User>> GetAllUsersAsync();
 	}
 }

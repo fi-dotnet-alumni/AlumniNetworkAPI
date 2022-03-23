@@ -33,6 +33,11 @@ namespace AlumniNetworkAPI.Services
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users.Include(t => t.Topics).Include(t => t.Groups).ToListAsync();
+        }
+
         public async Task<User> GetInfoAsync(int id)
         {
             return await _context.Users.Include(t => t.Topics).Include(t => t.Groups).FirstOrDefaultAsync(u => u.Id == id);
