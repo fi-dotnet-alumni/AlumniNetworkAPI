@@ -48,7 +48,7 @@ namespace AlumniNetworkAPI.Services
                     returnedGroups.Add(group);
                 }
             }
-            return returnedGroups;
+            return returnedGroups.OrderByDescending(g => g.Posts.Count()).ToList();
         }
 
         public bool GroupExists(int groupId)
