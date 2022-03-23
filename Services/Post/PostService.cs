@@ -66,7 +66,7 @@ namespace AlumniNetworkAPI.Services
                     returnedPosts.Add(post);
             }
 
-            return returnedPosts.OrderByDescending(p => p.Timestamp);
+            return returnedPosts.OrderByDescending(p => p.Timestamp).ToList();
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
