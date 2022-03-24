@@ -71,12 +71,12 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificGroupAsync(int groupId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetGroupId == groupId).OrderByDescending(p => p.Timestamp).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Include(p => p.Replies).Where(p => p.TargetGroupId == groupId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<IEnumerable<Post>> GetPostsFromSpecificTopicAsync(int topicId)
         {
-            return await _context.Posts.Include(p => p.Sender).Where(p => p.TargetTopicId == topicId).OrderByDescending(p => p.Timestamp).ToListAsync();
+            return await _context.Posts.Include(p => p.Sender).Include(p => p.Replies).Where(p => p.TargetTopicId == topicId).OrderByDescending(p => p.Timestamp).ToListAsync();
         }
 
         public async Task<Post> GetSpecificPostAsync(int postId)
