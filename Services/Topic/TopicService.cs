@@ -29,7 +29,7 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<Topic> GetTopicAsync(int id)
         {
-            return await _context.Topics.Include(t => t.Posts).FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Topics.Include(t => t.Posts).Include(t => t.Users).FirstOrDefaultAsync(t => t.Id == id);
         }
 
         public async Task JoinTopicAsync(int topicId, int userId)
@@ -46,9 +46,23 @@ namespace AlumniNetworkAPI.Services
             }
         }
 
+        public async Task LeaveTopicAsync(Topic topic, User user)
+        {
+            topic.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<bool> TopicExistsAsync(int id)
         {
             return await _context.Topics.FirstOrDefaultAsync(t => t.Id == id) != null;
+        }
+
+        public bool UserIsSubscribed(Topic topic, User user)
+        {
+            if (topic.Users.Contains(user))
+                return true;
+            else
+                return false;
         }
     }
 }

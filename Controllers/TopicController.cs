@@ -84,20 +84,61 @@ namespace AlumniNetworkAPI.Controllers
         {
             string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
-
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
             }
 
-            if (!await _topicService.TopicExistsAsync(id))
+            Topic topic = await _topicService.GetTopicAsync(id);
+            if (topic == null)
             {
                 return NotFound($"Topic does not exist with id {id}");
+            }
+
+            // check if user is already subscribed
+            if (_topicService.UserIsSubscribed(topic, user))
+            {
+                // 400 Bad request
+                return StatusCode(StatusCodes.Status400BadRequest, "User is already subscribed to the topic");
             }
 
             await _topicService.JoinTopicAsync(id, user.Id);
 
             return Ok("Subscribed");
+        }
+
+        /// <summary>
+        /// Unsubscribes the requesting user from the topic specified by the id
+        /// </summary>
+        /// <param name="id">Id of the topic</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost("{id}/leave")]
+        public async Task<IActionResult> LeaveTopic(int id)
+        {
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
+
+            Topic topic = await _topicService.GetTopicAsync(id);
+            if (topic == null)
+            {
+                return NotFound($"Topic does not exist with id {id}");
+            }
+
+            // check if user is subscribed to the topic
+            if (!_topicService.UserIsSubscribed(topic, user))
+            {
+                // 400 Bad request
+                return StatusCode(StatusCodes.Status400BadRequest, "User hasn't subscribed to the topic");
+            }
+
+            await _topicService.LeaveTopicAsync(topic, user);
+
+            return Ok("Unsubscribed");
         }
     }
 }
