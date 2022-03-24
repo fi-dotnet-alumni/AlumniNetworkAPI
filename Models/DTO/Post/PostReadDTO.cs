@@ -11,5 +11,9 @@
         public string SenderPictureURL { get; set; }
         public int? ReplyParentId { get; set; }
         public List<int>? Replies { get; set; }
+        public int? TargetGroupId { get; set; }
+        public string? GroupName { get; set; }
+        public int? TargetTopicId { get; set; }
+        public string? TopicName { get; set; }
     }
 }

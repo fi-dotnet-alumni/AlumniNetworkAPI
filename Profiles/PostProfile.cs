@@ -19,6 +19,12 @@ namespace AlumniNetworkAPI.Profiles
                 // include sender picture url
                 .ForMember(pdto => pdto.SenderPictureURL, opt => opt
                 .MapFrom(p => p.Sender.PictureURL))
+                // include group name
+                .ForMember(pdto => pdto.GroupName, opt => opt
+                .MapFrom(p => p.TargetGroup.Name))
+                // include topic name
+                .ForMember(pdto => pdto.TopicName, opt => opt
+                .MapFrom(p => p.TargetTopic.Name))
                 .ReverseMap();
 
             // Post<->PostCreateDTO
