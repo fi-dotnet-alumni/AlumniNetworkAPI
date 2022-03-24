@@ -157,10 +157,56 @@ namespace AlumniNetworkAPI.Controllers
                 // 403 Forbidden
                 return StatusCode(StatusCodes.Status403Forbidden, "Access denied: User does not have access to group");
             }
+            // check if the user is already in the group
+            if (_groupService.UserIsAGroupMember(group, joiningUser))
+            {
+                // 400 Bad request
+                return StatusCode(StatusCodes.Status400BadRequest, "User is already a member of the group");
+            }
             else
             {
                 // add the specified user to the group
                 await _groupService.JoinGroupAsync(group, joiningUser);
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Removes the requesting user from the group specified by the id
+        /// </summary>
+        /// <param name="id">Id of the group</param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost("{id}/leave")]
+        public async Task<IActionResult> LeaveGroup(int id)
+        {
+            // extract subject from token and find corresponding user
+            string keycloakId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User user = await _userService.FindUserByKeycloakIdAsync(keycloakId);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, "Access denied: Could not verify user.");
+            }
+
+            // invalid group id
+            if (!_groupService.GroupExists(id))
+            {
+                return NotFound($"Group does not exist with id {id}");
+            }
+
+            Group group = await _groupService.GetSpecificGroupAsync(id);
+
+            // check if the requesting user is not a member of the group
+            if (!_groupService.UserIsAGroupMember(group, user))
+            {
+                // 400 Bad request
+                return StatusCode(StatusCodes.Status400BadRequest, "User is not a member of the group");
+            }
+            else
+            {
+                // remove the requesting user from the group
+                await _groupService.LeaveGroupAsync(group, user);
             }
 
             return NoContent();

@@ -11,5 +11,7 @@ namespace AlumniNetworkAPI.Services
         public Task JoinGroupAsync(Group group, User user);
         public bool GroupExists(int groupId);
         public bool UserHasGroupAccess(Group group, User user);
+        public bool UserIsAGroupMember(Group group, User user);
+        public Task LeaveGroupAsync(Group group, User user);
     }
 }

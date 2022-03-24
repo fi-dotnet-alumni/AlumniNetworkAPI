@@ -62,6 +62,12 @@ namespace AlumniNetworkAPI.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task LeaveGroupAsync(Group group, User user)
+        {
+            group.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
         public bool UserHasGroupAccess(Group group, User user)
         {
             if (group.isPrivate)
@@ -72,6 +78,14 @@ namespace AlumniNetworkAPI.Services
                     return false;
             }
             return true;
+        }
+
+        public bool UserIsAGroupMember(Group group, User user)
+        {
+            if (group.Users.Contains(user))
+                return true;
+            else
+                return false;
         }
     }
 }
