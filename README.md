@@ -32,6 +32,11 @@ Alumni Network API is a ASP.NET Core Web API that provides endpoints for [Alumni
 
 [Azure Deployment Setup](Documentation/azure_deployment.md)
 
+## Documenation
+
+[API Swagger Documentation](https://fi-dotnet-alumni.github.io/AlumniNetworkAPISwagger/)
+
+
 ## Contributors
 
 [Mikko Ryynänen (@mikkoryynanen)](https://github.com/mikkoryynanen)
