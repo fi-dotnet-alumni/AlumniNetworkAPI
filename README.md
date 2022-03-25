@@ -2,7 +2,7 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/fi-dotnet-alumni/AlumniNetworkAPI)
 
-[Database Diagram]()
+[Database Diagram](Documentation/alumni_database_diagram.png)
 
 ## Table of Contents
 
