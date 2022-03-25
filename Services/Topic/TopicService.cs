@@ -24,7 +24,7 @@ namespace AlumniNetworkAPI.Services
 
         public async Task<IEnumerable<Topic>> GetAllTopicsAsync()
         {
-            return await _context.Topics.Include(t => t.Posts).OrderByDescending(t => t.Posts.Count()).ToListAsync();
+            return await _context.Topics.Include(t => t.Posts).Include(t => t.Users).OrderByDescending(t => t.Posts.Count()).ToListAsync();
         }
 
         public async Task<Topic> GetTopicAsync(int id)

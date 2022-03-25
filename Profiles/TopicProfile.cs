@@ -13,6 +13,9 @@ namespace AlumniNetworkAPI.Profiles
 				// turn related posts into a list of ints
 				.ForMember(tdto => tdto.Posts, opt => opt
 					.MapFrom(t => t.Posts.Select(p => p.Id).ToList()))
+				// turn related users into a list of ints
+				.ForMember(tdto => tdto.Users, opt => opt
+					.MapFrom(t => t.Users.Select(u => u.Id).ToList()))
 				.ReverseMap();
 				
 			CreateMap<Topic, TopicCreateDTO>()
