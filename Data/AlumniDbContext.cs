@@ -22,20 +22,20 @@ namespace AlumniNetworkAPI.Data
                 new User
                 {
                     Id = 1,
-                    Name = "Tester",
-                    Status = "Online",
+                    Name = "John Doe",
+                    Status = "Attending Experis Academy courses at Noroff",
                     PictureURL = "https://picsum.photos/100/100",
-                    Bio = "Some say i might not be real at all",
-                    FunFact = "What is life?"
+                    Bio = "Patience is a virtue, and I'm learning patience. It's a tough lesson.",
+                    FunFact = "When I was in college, I wanted to be involved in things that would change the world."
                 },
                 new User
                 {
                     Id = 2,
-                    Name = "RandomPerson",
-                    Status = "Online",
+                    Name = "Jane Doe",
+                    Status = "Graduated from Experis Academy / Unemployed",
                     PictureURL = "https://cdn.icon-icons.com/icons2/1378/PNG/512/avatardefault_92824.png",
-                    Bio = "Nothing to see here.",
-                    FunFact = "The brand name Spam is a combination of spice and ham"
+                    Bio = "I'd rather be optimistic and wrong than pessimistic and right.",
+                    FunFact = "I would like to die on Mars. Just not on impact."
                 }
             );
 
@@ -44,22 +44,22 @@ namespace AlumniNetworkAPI.Data
                 new Group
                 {
                     Id = 1,
-                    Name = "Test Group 1",
-                    Description = "The first test group",
+                    Name = "Noroff 2021 Alumni",
+                    Description = "Group for Noroff class of 2021 alumni",
                     isPrivate = false
                 },
                 new Group
                 {
                     Id = 2,
-                    Name = "Test Group 2",
-                    Description = "The second test group",
+                    Name = "Noroff 2022 Alumni",
+                    Description = "Group for Noroff class of 2022 alumni",
                     isPrivate = false
                 },
                 new Group
                 {
                     Id = 3,
-                    Name = "Test Group 3",
-                    Description = "The third test group",
+                    Name = "Test Private Group",
+                    Description = "A private group",
                     isPrivate = true
                 }
             );
