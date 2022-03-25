@@ -16,7 +16,13 @@
 
 ## General Information
 
+Group project made during Experis Academy Full-Stack Developer course. Courses are hosted by Noroff. Project members are listed on the [Contributors](#contributors) section.
+
 Alumni Network API is a ASP.NET Core Web API that provides endpoints for [Alumni Network](https://github.com/Tooppa/alumni-network) frontend client.
+
+Both Experis and Noroff have experienced difficulty in maintaining contact with past candidates to notify them of social events and gather data for quality assurance purposes. Primary task was to create an Alumni Network Portal to facilitate this kind of communiation.
+
+Users can also register their topical interests and facilitate informal social contact between members of specific groups (i.e. “Bergen Full- stack Development Winter 2022”).
 
 ## Technologies
 
