@@ -2,8 +2,6 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/fi-dotnet-alumni/AlumniNetworkAPI)
 
-[Database Diagram](Documentation/alumni_database_diagram.png)
-
 ## Table of Contents
 
 - [General Information](#general-information)
@@ -12,17 +10,19 @@
 
 - [Installation and Usage](#installation-and-usage)
 
+- [Documentation](#documentation)
+
 - [Contributors](#contributors)
 
 ## General Information
 
-Group project made during Experis Academy Full-Stack Developer course. Courses are hosted by Noroff. Project members are listed on the [Contributors](#contributors) section.
+Alumni Network API is an ASP.NET Core Web API that provides endpoints for [Alumni Network](https://github.com/Tooppa/alumni-network) frontend client.
 
-Alumni Network API is a ASP.NET Core Web API that provides endpoints for [Alumni Network](https://github.com/Tooppa/alumni-network) frontend client.
+The Alumni Network web app is a group project made during the Experis Academy Full-Stack Developer course hosted by Noroff. Project members are listed in the [Contributors](#contributors) section. This repository essentially contains the backend portion of the app.
 
-Both Experis and Noroff have experienced difficulty in maintaining contact with past candidates to notify them of social events and gather data for quality assurance purposes. Primary task was to create an Alumni Network Portal to facilitate this kind of communiation.
+The fictional use case for the project was that both Experis and Noroff had experienced difficulty in maintaining contact with past candidates to notify them of social events and gathering data for quality assurance purposes. Our primary task was to create an Alumni Network Portal to facilitate this kind of communication.
 
-Users can also register their topical interests and facilitate informal social contact between members of specific groups (i.e. “Bergen Full- stack Development Winter 2022”).
+In the application itself users can register, log in, browse and post messages in various groups and topics, create new topics and groups, subscribe to existing topics or join groups, comment posts, edit their profile information and send private messages to other users.
 
 ## Technologies
 
@@ -38,7 +38,9 @@ Users can also register their topical interests and facilitate informal social c
 
 [Azure Deployment Setup](Documentation/azure_deployment.md)
 
-## Documenation
+## Documentation
+
+[Database Diagram](Documentation/alumni_database_diagram.png)
 
 [API Swagger Documentation](https://fi-dotnet-alumni.github.io/AlumniNetworkAPISwagger/)
 
