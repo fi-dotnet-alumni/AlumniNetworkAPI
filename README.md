@@ -1,8 +1,8 @@
 # Alumni Network API
 
-[Frontend Repository](https://github.com/Tooppa/alumni-network)
-
 ![GitHub repo size](https://img.shields.io/github/repo-size/fi-dotnet-alumni/AlumniNetworkAPI)
+
+[Frontend Repository](https://github.com/Tooppa/alumni-network)
 
 ## Table of Contents
 
